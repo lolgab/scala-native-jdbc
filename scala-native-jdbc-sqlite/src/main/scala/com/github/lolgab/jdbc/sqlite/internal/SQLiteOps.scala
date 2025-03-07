@@ -30,7 +30,6 @@ object SQLiteOps {
     try {
       f(stmt)
     } finally {
-      println(s"finalizing statement $stmt")
       sqlite3_finalize(stmt)
     }
   }

@@ -376,7 +376,6 @@ class SQLiteResultSet(statement: SQLiteStatement, stmt: Ptr[sqlite3_stmt]) exten
 
   override def close(): Unit = {
     if (!_closed) {
-      println(s"finalizing statement $stmt")
       sqlite3_finalize(stmt)
       _closed = true
     }

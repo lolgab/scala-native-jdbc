@@ -28,16 +28,8 @@ class SimpleTest extends munit.FunSuite {
       "CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT)"
     )
     assertEquals(
-      statement.executeUpdate("INSERT INTO test (name) VALUES ('John')"),
-      1
-    )
-    assertEquals(
-      statement.executeUpdate("INSERT INTO test (name) VALUES ('Jim')"),
-      1
-    )
-    assertEquals(
-      statement.executeUpdate("INSERT INTO test (name) VALUES ('Sarah')"),
-      1
+      statement.executeUpdate("INSERT INTO test (name) VALUES ('John'), ('Jim'), ('Sarah')"),
+      3
     )
     assertEquals(statement.executeUpdate("DELETE FROM test;"), 3)
   }
@@ -50,21 +42,9 @@ class SimpleTest extends munit.FunSuite {
     )
     assertEquals(
       connection
-        .prepareStatement("INSERT INTO test (name) VALUES ('John')")
+        .prepareStatement("INSERT INTO test (name) VALUES ('John'), ('Jim'), ('Sarah')")
         .executeUpdate(),
-      1
-    )
-    assertEquals(
-      connection
-        .prepareStatement("INSERT INTO test (name) VALUES ('Jim')")
-        .executeUpdate(),
-      1
-    )
-    assertEquals(
-      connection
-        .prepareStatement("INSERT INTO test (name) VALUES ('Sarah')")
-        .executeUpdate(),
-      1
+      3
     )
     assertEquals(
       connection.prepareStatement("DELETE FROM test;").executeUpdate(),

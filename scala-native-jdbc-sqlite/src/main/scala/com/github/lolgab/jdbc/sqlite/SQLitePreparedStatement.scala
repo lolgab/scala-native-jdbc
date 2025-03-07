@@ -19,6 +19,13 @@ class SQLitePreparedStatement(
 ) extends SQLiteStatement(connection, db)
     with PreparedStatement {
 
+  private val stmt: Ptr[sqlite3_stmt] = {
+    Zone {
+      SQLiteOps.createStatementHandle(db, sql)
+    }
+  }
+  private var currentResultSet: SQLiteResultSet = null
+
   def getParameterMetaData(): ParameterMetaData = ???
 
   def setSQLXML(parameterIndex: Int, xmlObject: SQLXML): Unit = ???
@@ -133,15 +140,6 @@ class SQLitePreparedStatement(
   ): Unit = ???
 
   def setNCharacterStream(parameterIndex: Int, value: Reader): Unit = ???
-
-  private var stmt: Ptr[sqlite3_stmt] = null
-  private var currentResultSet: SQLiteResultSet = null
-
-  locally {
-    Zone {
-      SQLiteOps.createStatementHandle(db, sql)
-    }
-  }
 
   def executeQuery(): ResultSet = {
     checkClosed()
