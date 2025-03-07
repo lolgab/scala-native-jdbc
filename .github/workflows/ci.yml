@@ -13,5 +13,7 @@ jobs:
           java-version: "11"
           architecture: "x64"
           distribution: "temurin"
+      - name: Setup sbt launcher
+        uses: sbt/setup-sbt@v1
       - name: Run test
         run: sbt test
