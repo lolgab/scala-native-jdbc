@@ -28,7 +28,9 @@ class SimpleTest extends munit.FunSuite {
       "CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT)"
     )
     assertEquals(
-      statement.executeUpdate("INSERT INTO test (name) VALUES ('John'), ('Jim'), ('Sarah')"),
+      statement.executeUpdate(
+        "INSERT INTO test (name) VALUES ('John'), ('Jim'), ('Sarah')"
+      ),
       3
     )
     assertEquals(statement.executeUpdate("DELETE FROM test;"), 3)
@@ -42,7 +44,9 @@ class SimpleTest extends munit.FunSuite {
     )
     assertEquals(
       connection
-        .prepareStatement("INSERT INTO test (name) VALUES ('John'), ('Jim'), ('Sarah')")
+        .prepareStatement(
+          "INSERT INTO test (name) VALUES ('John'), ('Jim'), ('Sarah')"
+        )
         .executeUpdate(),
       3
     )
@@ -139,5 +143,26 @@ class SimpleTest extends munit.FunSuite {
     assertEquals(resultSet.getInt("order_count"), 1)
     assertEquals(resultSet.getDouble("total_spent"), 200.00)
     assertEquals(resultSet.getString("products"), "Gadget")
+  }
+
+  test("prepareStatement query returns all results") {
+    val connection = DriverManager.getConnection("jdbc:sqlite::memory:")
+    connection
+      .createStatement()
+      .executeUpdate(
+        """CREATE TABLE p (name TEXT, price INTEGER);"""
+      )
+    connection
+      .createStatement()
+      .executeUpdate(
+        """INSERT INTO p (name, price) VALUES ('a', 1), ('b', 2);"""
+      )
+    val rs = connection.prepareStatement("SELECT * FROM p;").executeQuery()
+
+    val builder = Seq.newBuilder[(String, Int)]
+    while (rs.next()) {
+      builder += (rs.getString(1) -> rs.getInt(2))
+    }
+    assertEquals(builder.result(), Seq(("a", 1), ("b", 2)))
   }
 }

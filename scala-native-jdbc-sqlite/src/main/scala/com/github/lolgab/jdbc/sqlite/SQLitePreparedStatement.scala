@@ -145,11 +145,6 @@ class SQLitePreparedStatement(
     checkClosed()
     closeCurrentResultSet()
 
-    val result = sqlite3_step(stmt)
-    if (result != SQLITE_ROW && result != SQLITE_DONE) {
-      throw SQLException("Failed to execute query")
-    }
-
     currentResultSet = SQLiteResultSet(this, stmt)
     currentResultSet
   }
