@@ -1,10 +1,29 @@
-val scala3 = "3.3.4"
+import xerial.sbt.Sonatype._
+
+ThisBuild / version := "0.0.1"
+ThisBuild / scalaVersion := "3.3.4"
+// ThisBuild / versionScheme := Some("early-semver")
+
+ThisBuild / organization := "com.github.lolgab"
+ThisBuild / homepage := Some(url("https://github.com/lolgab/scala-native-jdbc"))
+ThisBuild / licenses := List(
+  "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
+)
+ThisBuild / developers := List(
+  Developer(
+    "lolgab",
+    "Lorenzo Gabriele",
+    "lorenzolespaul@gmail.com",
+    url("https://github.com/lolgab")
+  )
+)
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 
 lazy val `scala-native-jdbc` = project
   .in(file("scala-native-jdbc"))
   .settings(
-    name := "scala-native-jdbc",
-    scalaVersion := scala3
+    name := "scala-native-jdbc"
   )
   .enablePlugins(ScalaNativePlugin)
 
@@ -12,7 +31,6 @@ lazy val `scala-native-jdbc-sqlite` = project
   .in(file("scala-native-jdbc-sqlite"))
   .settings(
     name := "scala-native-jdbc-sqlite",
-    scalaVersion := scala3,
     Compile / resourceGenerators += Def.task {
       val url = "https://sqlite.org/2025/sqlite-amalgamation-3490100.zip"
       val targetDir =
@@ -47,11 +65,10 @@ lazy val `scala-native-jdbc-tests` = crossProject(JVMPlatform, NativePlatform)
   .in(file("scala-native-jdbc-tests"))
   .settings(
     name := "scala-native-jdbc-tests",
-    scalaVersion := scala3,
+    noPublishSettings,
     libraryDependencies ++= Seq(
       "org.scalameta" %%% "munit" % "1.0.0" % Test
-    ),
-    publish / skip := true
+    )
   )
   .nativeSettings(
     nativeConfig ~= {
@@ -75,7 +92,7 @@ lazy val root = project
   .in(file("."))
   .settings(
     name := "root",
-    publish / skip := true
+    noPublishSettings
   )
   .aggregate(
     `scala-native-jdbc`,
@@ -83,3 +100,7 @@ lazy val root = project
     `scala-native-jdbc-tests`.jvm,
     `scala-native-jdbc-tests`.native
   )
+
+lazy val noPublishSettings = Seq(
+  publish / skip := true
+)

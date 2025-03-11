@@ -17,3 +17,12 @@ jobs:
         uses: sbt/setup-sbt@v1
       - name: Run test
         run: sbt test
+      - name: Publish to Sonatype
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          PGP_PASSPHRASE: ${{ secrets.SONATYPE_PGP_PRIVATE_KEY_PASSWORD }}
+          PGP_SECRET: ${{ secrets.SONATYPE_PGP_PRIVATE_KEY }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: |
+          sbt ci-release
