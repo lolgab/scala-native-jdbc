@@ -23,7 +23,12 @@ ThisBuild / sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 lazy val `scala-native-jdbc` = project
   .in(file("scala-native-jdbc"))
   .settings(
-    name := "scala-native-jdbc"
+    name := "scala-native-jdbc",
+    Compile / packageBin / mappings ~= {
+      _.filter { case (_, path) =>
+        !path.endsWith(".class") || !path.endsWith(".tasty")
+      }
+    }
   )
   .enablePlugins(ScalaNativePlugin)
 
