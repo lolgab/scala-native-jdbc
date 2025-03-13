@@ -14,7 +14,9 @@ jobs:
           architecture: "x64"
           distribution: "temurin"
       - name: Publish scalasql to Sonatype
-        run: ./mill mill.scalalib.PublishModule/
+        run: |
+          cd scalasql
+          ./scalasql.sh
         env:
           MILL_PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           MILL_PGP_SECRET_BASE64: ${{ secrets.PGP_SECRET }}
