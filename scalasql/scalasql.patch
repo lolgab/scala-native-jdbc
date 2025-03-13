@@ -1,0 +1,102 @@
+diff --git a/build.mill b/build.mill
+index e360e3c..1411ba4 100644
+--- a/build.mill
++++ b/build.mill
+@@ -6,18 +6,19 @@ import $ivy.`com.github.lolgab::mill-mima::0.1.0`
+ import $ivy.`com.goyeau::mill-scalafix::0.4.2`
+ import de.tobiasroeser.mill.vcs.version.VcsVersion
+ import com.goyeau.mill.scalafix.ScalafixModule
+-import mill._, scalalib._, publish._
++import mill._, scalalib._, scalanativelib._, publish._
+ 
+-val scalaVersions = Seq("2.13.12", "3.4.2")
++val scalaVersions = Seq("3.4.2")
+ 
+-trait Common extends CrossScalaModule with PublishModule with ScalafixModule{
++trait Common extends CrossScalaModule with ScalaNativeModule with PublishModule with ScalafixModule{
+   def scalaVersion = crossScalaVersion
++  def scalaNativeVersion = "0.5.7"
+ 
+   def publishVersion = VcsVersion.vcsState().format()
+ 
+   def pomSettings = PomSettings(
+     description = artifactName(),
+-    organization = "com.lihaoyi",
++    organization = "com.github.lolgab",
+     url = "https://github.com/com-lihaoyi/scalasql",
+     licenses = Seq(License.MIT),
+     versionControl = VersionControl.github(
+@@ -39,47 +40,42 @@ trait Common extends CrossScalaModule with PublishModule with ScalafixModule{
+ object scalasql extends Cross[ScalaSql](scalaVersions)
+ trait ScalaSql extends Common{ common =>
+   def moduleDeps = Seq(query, operations)
+-  def ivyDeps = Agg(
+-    ivy"org.apache.logging.log4j:log4j-api:2.20.0",
+-    ivy"org.apache.logging.log4j:log4j-core:2.20.0",
+-    ivy"org.apache.logging.log4j:log4j-slf4j-impl:2.20.0",
+-
+-  ) ++ Option.when(scalaVersion().startsWith("2."))(
++  def ivyDeps = Agg.empty[Dep] ++ Option.when(scalaVersion().startsWith("2."))(
+     ivy"org.scala-lang:scala-reflect:${scalaVersion()}"
+   )
+ 
+ 
+-  object test extends ScalaTests with ScalafixModule{
+-    def scalacOptions = common.scalacOptions
+-    def ivyDeps = Agg(
+-      ivy"com.github.vertical-blank:sql-formatter:2.0.4",
+-      ivy"com.lihaoyi::mainargs:0.4.0",
+-      ivy"com.lihaoyi::os-lib:0.9.1",
+-      ivy"com.lihaoyi::upickle:3.1.3",
+-      ivy"com.lihaoyi::utest:0.8.2",
+-      ivy"com.h2database:h2:2.2.224",
+-      ivy"org.xerial:sqlite-jdbc:3.43.0.0",
+-      ivy"org.testcontainers:postgresql:1.19.1",
+-      ivy"org.postgresql:postgresql:42.6.0",
+-      ivy"org.testcontainers:mysql:1.19.1",
+-      ivy"mysql:mysql-connector-java:8.0.33",
+-      ivy"com.zaxxer:HikariCP:5.1.0"
+-    )
+-
+-    def testFramework = "scalasql.UtestFramework"
+-
+-    def forkArgs = Seq("-Duser.timezone=Asia/Singapore")
+-    def forkEnv = Map("MILL_WORKSPACE_ROOT" -> T.workspace.toString())
+-  }
++  // object test extends ScalaNativeTests with ScalafixModule{
++  //   def scalacOptions = common.scalacOptions
++  //   def ivyDeps = Agg(
++  //     ivy"com.github.vertical-blank:sql-formatter:2.0.4",
++  //     ivy"com.lihaoyi::mainargs:0.4.0",
++  //     ivy"com.lihaoyi::os-lib:0.9.1",
++  //     ivy"com.lihaoyi::upickle:3.1.3",
++  //     ivy"com.lihaoyi::utest:0.8.2",
++  //     ivy"com.h2database:h2:2.2.224",
++  //     ivy"org.xerial:sqlite-jdbc:3.43.0.0",
++  //     ivy"org.testcontainers:postgresql:1.19.1",
++  //     ivy"org.postgresql:postgresql:42.6.0",
++  //     ivy"org.testcontainers:mysql:1.19.1",
++  //     ivy"mysql:mysql-connector-java:8.0.33",
++  //     ivy"com.zaxxer:HikariCP:5.1.0"
++  //   )
++
++  //   def testFramework = "scalasql.UtestFramework"
++
++  //   def forkArgs = Seq("-Duser.timezone=Asia/Singapore")
++  //   def forkEnv = Map("MILL_WORKSPACE_ROOT" -> T.workspace.toString())
++  // }
+ 
+   private def indent(code: Iterable[String]): String =
+     code.map(_.split("\n").map("  " + _).mkString("\n")).mkString("\n")
+ 
+   object core extends Common with CrossValue {
+     def ivyDeps = Agg(
+-      ivy"com.lihaoyi::geny:1.0.0",
+-      ivy"com.lihaoyi::sourcecode:0.3.1",
+-      ivy"com.lihaoyi::pprint:0.8.1",
++      ivy"com.lihaoyi::geny::1.1.1",
++      ivy"com.lihaoyi::sourcecode::0.4.2",
++      ivy"com.lihaoyi::pprint::0.9.0",
+     ) ++ Option.when(scalaVersion().startsWith("2."))(
+       ivy"org.scala-lang:scala-reflect:${scalaVersion()}"
+     )
