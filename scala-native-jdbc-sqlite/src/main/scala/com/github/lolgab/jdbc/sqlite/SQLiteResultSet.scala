@@ -11,7 +11,7 @@ import java.{util => ju}
 import java.io.Reader
 import java.net.URL
 
-class SQLiteResultSet(statement: SQLiteStatement, stmt: Ptr[sqlite3_stmt]) extends ResultSet {
+class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sqlite3_stmt]) extends ResultSet {
 
   override def deleteRow(): Unit = ???
 
@@ -370,7 +370,7 @@ class SQLiteResultSet(statement: SQLiteStatement, stmt: Ptr[sqlite3_stmt]) exten
         _isAfterLast = true
         false
       case _ =>
-        throw SQLException("Error while moving to next row")
+        throw SQLiteOps.sqliteException(db, "Error while moving to next row")
     }
   }
 

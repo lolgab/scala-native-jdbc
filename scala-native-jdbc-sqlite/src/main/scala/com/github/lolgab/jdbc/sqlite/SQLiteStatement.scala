@@ -86,7 +86,7 @@ class SQLiteStatement(connection: SQLiteConnection, db: Ptr[sqlite3])
 
     currentResultSet = Zone {
       val stmt = SQLiteOps.createStatementHandle(db, sql)
-      SQLiteResultSet(this, stmt)
+      SQLiteResultSet(this, db, stmt)
     }
     currentResultSet
   }
@@ -99,7 +99,7 @@ class SQLiteStatement(connection: SQLiteConnection, db: Ptr[sqlite3])
       SQLiteOps.withStatement(db, sql) { stmt =>
         val result = sqlite3_step(stmt)
         if (result != SQLITE_DONE) {
-          throw SQLException(s"Failed to execute update: $sql")
+          SQLiteOps.sqliteException(db, s"Failed to execute update: $sql")
         }
 
         sqlite3_changes(db)
