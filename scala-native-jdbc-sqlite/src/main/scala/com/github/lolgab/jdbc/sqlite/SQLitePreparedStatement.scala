@@ -145,7 +145,7 @@ class SQLitePreparedStatement(
     checkClosed()
     closeCurrentResultSet()
 
-    currentResultSet = SQLiteResultSet(this, stmt)
+    currentResultSet = SQLiteResultSet(this, db, stmt)
     currentResultSet
   }
 
@@ -155,7 +155,7 @@ class SQLitePreparedStatement(
 
     val result = sqlite3_step(stmt)
     if (result != SQLITE_DONE) {
-      throw SQLException("Failed to execute update")
+      throw SQLiteOps.sqliteException(db, "Failed to execute update")
     }
 
     sqlite3_reset(stmt)
@@ -165,40 +165,41 @@ class SQLitePreparedStatement(
   def setString(parameterIndex: Int, x: String): Unit = {
     checkClosed()
     Zone {
-      SQLiteOps.bindString(stmt, parameterIndex, x)
+      SQLiteOps.bindString(db, stmt, parameterIndex, x)
     }
   }
 
   def setInt(parameterIndex: Int, x: Int): Unit = {
     checkClosed()
-    SQLiteOps.bindInt(stmt, parameterIndex, x)
+    SQLiteOps.bindInt(db, stmt, parameterIndex, x)
   }
 
   def setLong(parameterIndex: Int, x: Long): Unit = {
     checkClosed()
-    SQLiteOps.bindLong(stmt, parameterIndex, x)
+    SQLiteOps.bindLong(db, stmt, parameterIndex, x)
   }
 
   def setDouble(parameterIndex: Int, x: Double): Unit = {
     checkClosed()
-    SQLiteOps.bindDouble(stmt, parameterIndex, x)
+    SQLiteOps.bindDouble(db, stmt, parameterIndex, x)
   }
 
   def setFloat(parameterIndex: Int, x: Float): Unit = {
     checkClosed()
-    SQLiteOps.bindDouble(stmt, parameterIndex, x.toDouble)
+    SQLiteOps.bindDouble(db, stmt, parameterIndex, x.toDouble)
   }
 
   def setBoolean(parameterIndex: Int, x: Boolean): Unit = {
     checkClosed()
-    SQLiteOps.bindInt(stmt, parameterIndex, if (x) 1 else 0)
+    SQLiteOps.bindInt(db, stmt, parameterIndex, if (x) 1 else 0)
   }
 
   def setNull(parameterIndex: Int, sqlType: Int): Unit = {
     checkClosed()
     val result = sqlite3_bind_null(stmt, parameterIndex)
     if (result != SQLITE_OK) {
-      throw SQLException(
+      throw SQLiteOps.sqliteException(
+        db,
         s"Failed to bind null to parameter $parameterIndex"
       )
     }
@@ -207,7 +208,7 @@ class SQLitePreparedStatement(
   def setBytes(parameterIndex: Int, x: scala.Array[Byte]): Unit = {
     checkClosed()
     Zone {
-      SQLiteOps.bindBytes(stmt, parameterIndex, x)
+      SQLiteOps.bindBytes(db, stmt, parameterIndex, x)
     }
   }
 
@@ -215,7 +216,7 @@ class SQLitePreparedStatement(
     checkClosed()
     val result = sqlite3_clear_bindings(stmt)
     if (result != SQLITE_OK) {
-      throw SQLException("Failed to clear parameters")
+      SQLiteOps.sqliteException(db, "Failed to clear parameters")
     }
   }
 
