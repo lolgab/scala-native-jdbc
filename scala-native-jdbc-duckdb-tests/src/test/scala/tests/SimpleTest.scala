@@ -36,7 +36,7 @@ class SimpleTest extends munit.FunSuite {
     assertEquals(statement.executeUpdate("DELETE FROM test;"), 3)
   }
 
-  /*test("PreparedStatement.executeUpdate returns the number of rows affected") {
+  test("PreparedStatement.executeUpdate returns the number of rows affected") {
     val connection = DriverManager.getConnection("jdbc:duckdb:")
     val statement = connection.createStatement()
     statement.executeUpdate(
@@ -54,7 +54,7 @@ class SimpleTest extends munit.FunSuite {
       connection.prepareStatement("DELETE FROM test;").executeUpdate(),
       3
     )
-  }*/
+  }
 
   test("complex test with multiple tables and joins") {
     val connection = DriverManager.getConnection("jdbc:duckdb:")
@@ -145,7 +145,7 @@ class SimpleTest extends munit.FunSuite {
     assertEquals(resultSet.getString("products"), "Gadget")
   }
 
-  /*test("prepareStatement query returns all results") {
+  test("prepareStatement query returns all results") {
     val connection = DriverManager.getConnection("jdbc:duckdb:")
     connection
       .createStatement()
@@ -164,5 +164,5 @@ class SimpleTest extends munit.FunSuite {
       builder += (rs.getString(1) -> rs.getInt(2))
     }
     assertEquals(builder.result(), Seq(("a", 1), ("b", 2)))
-  }*/
+  }
 }

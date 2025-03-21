@@ -103,7 +103,7 @@ class DuckDBStatement(connection: DuckDBConnection, conn: Ptr[duckdb_connection]
       if (duckdb_query(!conn, toCString(sql), result) == duckdb_state.DuckDBError) {
         val errorMessage = fromCString(duckdb_result_error(result))
         duckdb_destroy_result(result)
-        throw new SQLException(s"Failed to perfrom query: $sql. Reason: $errorMessage")
+        throw new SQLException(s"Failed to perfrom update: $sql. Reason: $errorMessage")
       }
       currentResultSet = DuckDBResultSet(this, result)
       duckdb_rows_changed(result).toInt

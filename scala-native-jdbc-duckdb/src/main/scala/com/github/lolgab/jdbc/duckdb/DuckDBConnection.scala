@@ -163,7 +163,10 @@ class DuckDBConnection(filename: String) extends Connection {
     DuckDBStatement(this, conn)
   }
 
-  override def prepareStatement(sql: String): PreparedStatement = ???
+  override def prepareStatement(sql: String): PreparedStatement = {
+    checkClosed()
+    DuckDBPreparedStatement(this, conn, sql)
+  }
 
   override def setAutoCommit(autoCommit: Boolean): Unit = {
     checkClosed()
