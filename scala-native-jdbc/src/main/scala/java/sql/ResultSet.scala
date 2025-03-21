@@ -58,21 +58,6 @@ trait ResultSet extends AutoCloseable {
   def getFloat(columnLabel: String): Float
   def getBoolean(columnLabel: String): Boolean
   def getBytes(columnLabel: String): scala.Array[Byte]
-
-  /**
-   * Retrieves the number of columns in this ResultSet object.
-   */
-  def getColumnCount(): Int
-
-  /**
-   * Retrieves the name of the designated column.
-   */
-  def getColumnName(column: Int): String
-
-  /**
-   * Retrieves the designated column's SQL type.
-   */
-  def getColumnType(column: Int): Int
 }
 
 object ResultSet {
