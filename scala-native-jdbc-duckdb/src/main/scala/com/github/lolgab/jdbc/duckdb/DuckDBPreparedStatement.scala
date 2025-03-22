@@ -21,7 +21,10 @@ class DuckDBPreparedStatement(
     val _stmt: Ptr[duckdb_prepared_statement] = malloc(sizeof[duckdb_prepared_statement]).asInstanceOf[Ptr[duckdb_prepared_statement]]
     Zone {
       if (duckdb_prepare(!conn, toCString(sql), _stmt) == duckdb_state.DuckDBError) {
-        val errorMessage = fromCString(duckdb_prepare_error(!stmt))
+        val errorMessage = duckdb_prepare_error(!_stmt) match {
+          case null => "Unknown"
+          case reason => fromCString(reason)
+        }
         throw new SQLException(s"Failed to prepare statement $sql. Reason: $errorMessage")
       }
       _stmt
