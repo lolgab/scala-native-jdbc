@@ -5,19 +5,18 @@ import com.github.lolgab.jdbc.sqlite.internal.SQLiteOps
 import com.github.lolgab.jdbc.sqlite.internal.constants.*
 import com.github.lolgab.jdbc.sqlite.internal.structs.*
 import com.github.lolgab.jdbc.sqlite.internal.functions.*
+import com.github.lolgab.jdbc.SimpleResultSet
 import scala.scalanative.unsafe.*
 import java.io.InputStream
 import java.{util => ju}
 import java.io.Reader
 import java.net.URL
 
-class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sqlite3_stmt]) extends ResultSet {
+class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sqlite3_stmt]) extends SimpleResultSet {
 
   override def deleteRow(): Unit = ???
 
   override def getShort(columnIndex: Int): Short = ???
-
-  override def getShort(columnLabel: String): Short = ???
 
   override def updateInt(columnIndex: Int, x: Int): Unit = ???
 
@@ -459,33 +458,6 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
     _lastWasNull
   }
 
-  override def getString(columnLabel: String): String = {
-    getString(findColumn(columnLabel))
-  }
-
-  override def getInt(columnLabel: String): Int = {
-    getInt(findColumn(columnLabel))
-  }
-
-  override def getLong(columnLabel: String): Long = {
-    getLong(findColumn(columnLabel))
-  }
-
-  override def getDouble(columnLabel: String): Double = {
-    getDouble(findColumn(columnLabel))
-  }
-
-  override def getFloat(columnLabel: String): Float = {
-    getFloat(findColumn(columnLabel))
-  }
-
-  override def getBoolean(columnLabel: String): Boolean = {
-    getBoolean(findColumn(columnLabel))
-  }
-
-  override def getBytes(columnLabel: String): scala.Array[Byte] = {
-    getBytes(findColumn(columnLabel))
-  }
 
   private def getColumnCount(): Int = {
     checkClosed()

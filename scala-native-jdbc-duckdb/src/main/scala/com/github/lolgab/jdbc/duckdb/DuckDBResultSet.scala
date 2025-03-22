@@ -1,6 +1,7 @@
 package com.github.lolgab.jdbc.duckdb
 
 import com.github.lolgab.jdbc.duckdb.internal.duckdb.all.*
+import com.github.lolgab.jdbc.SimpleResultSet
 import java.io.InputStream
 import java.io.Reader
 import java.net.URL
@@ -10,13 +11,9 @@ import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 import scala.scalanative.libc.stdlib.*
 
-class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) extends ResultSet {
+class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) extends SimpleResultSet {
 
   override def deleteRow(): Unit = ???
-
-  override def getShort(columnIndex: Int): Short = ???
-
-  override def getShort(columnLabel: String): Short = ???
 
   override def updateInt(columnIndex: Int, x: Int): Unit = ???
 
@@ -443,6 +440,22 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
     }
   }
 
+  override def getShort(columnIndex: Int): Short = {
+    checkClosed()
+    checkColumnIndex(columnIndex)
+    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[Short]]
+    val validity = duckdb_vector_get_validity(column)
+    if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
+      _lastWasNull = false
+      data(_chunkIdx.toUSize)
+    }
+    else {
+      _lastWasNull = true
+      0
+    }
+  }
+
   override def getInt(columnIndex: Int): Int = {
     checkClosed()
     checkColumnIndex(columnIndex)
@@ -530,34 +543,6 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
   override def wasNull(): Boolean = {
     checkClosed()
     _lastWasNull
-  }
-
-  override def getString(columnLabel: String): String = {
-    getString(findColumn(columnLabel))
-  }
-
-  override def getInt(columnLabel: String): Int = {
-    getInt(findColumn(columnLabel))
-  }
-
-  override def getLong(columnLabel: String): Long = {
-    getLong(findColumn(columnLabel))
-  }
-
-  override def getDouble(columnLabel: String): Double = {
-    getDouble(findColumn(columnLabel))
-  }
-
-  override def getFloat(columnLabel: String): Float = {
-    getFloat(findColumn(columnLabel))
-  }
-
-  override def getBoolean(columnLabel: String): Boolean = {
-    getBoolean(findColumn(columnLabel))
-  }
-
-  override def getBytes(columnLabel: String): scala.Array[Byte] = {
-    getBytes(findColumn(columnLabel))
   }
 
   private def getColumnCount(): Int = {
