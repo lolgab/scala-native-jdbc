@@ -125,9 +125,7 @@ class DuckDBStatement(connection: DuckDBConnection, conn: Ptr[duckdb_connection]
     closeCurrentResultSet()
 
     Zone {
-      val result = alloc[duckdb_result]()
-      val state = duckdb_query(!conn, toCString(sql), result)
-      duckdb_destroy_result(result)
+      val state = duckdb_query(!conn, toCString(sql), null)
       state != duckdb_state.DuckDBError
     }
   }

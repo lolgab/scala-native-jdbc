@@ -193,9 +193,7 @@ class DuckDBPreparedStatement(
     closeCurrentResultSet()
 
     Zone {
-      val result = alloc[duckdb_result]()
-      val state = duckdb_execute_prepared(!stmt, result)
-      duckdb_destroy_result(result)
+      val state = duckdb_execute_prepared(!stmt, null)
       state != duckdb_state.DuckDBError
     }
   }
