@@ -78,8 +78,6 @@ class DuckDBPreparedStatement(
 
   def setRowId(parameterIndex: Int, x: RowId): Unit = ???
 
-  def setShort(parameterIndex: Int, x: Short): Unit = ???
-
   def setCharacterStream(
       parameterIndex: Int,
       reader: Reader,
@@ -204,6 +202,13 @@ class DuckDBPreparedStatement(
       if (duckdb_bind_varchar(!stmt, parameterIndex.toUInt, toCString(x)) == duckdb_state.DuckDBError) {
         throw new SQLException(s"Failed to bind string $x to parameter $parameterIndex")
       }
+    }
+  }
+
+  def setShort(parameterIndex: Int, x: Short): Unit = {
+    checkClosed()
+    if (duckdb_bind_int16(!stmt, parameterIndex.toUInt, x) == duckdb_state.DuckDBError) {
+      throw new SQLException(s"Failed to bind int $x to parameter $parameterIndex")
     }
   }
 
