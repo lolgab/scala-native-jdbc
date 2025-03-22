@@ -64,8 +64,6 @@ class DuckDBPreparedStatement(
 
   def setNClob(parameterIndex: Int, reader: Reader): Unit = ???
 
-  def execute(): Boolean = ???
-
   def setClob(parameterIndex: Int, x: Clob): Unit = ???
 
   def setClob(parameterIndex: Int, reader: Reader, length: Long): Unit = ???
@@ -152,29 +150,53 @@ class DuckDBPreparedStatement(
     closeCurrentResultSet()
 
     val result = malloc(sizeof[duckdb_result]).asInstanceOf[Ptr[duckdb_result]]
-    if (duckdb_execute_prepared(!stmt, result) == duckdb_state.DuckDBError) {
-      val errorMessage = fromCString(duckdb_result_error(result))
+    val state = duckdb_execute_prepared(!stmt, result)
+
+    if (state == duckdb_state.DuckDBError) {
+      val errorMessage = duckdb_result_error(result) match {
+        case null => "Unknown"
+        case reason => fromCString(reason)
+      }
       duckdb_destroy_result(result)
+      free(result)
       throw new SQLException(s"Failed to perfrom query: $sql. Reason: $errorMessage")
     }
-    else {
-      currentResultSet = DuckDBResultSet(this, result)
-      currentResultSet
-    }
+
+    currentResultSet = DuckDBResultSet(this, result)
+    currentResultSet
   }
 
   def executeUpdate(): Int = {
     checkClosed()
     closeCurrentResultSet()
-    val result = malloc(sizeof[duckdb_result]).asInstanceOf[Ptr[duckdb_result]]
-    if (duckdb_execute_prepared(!stmt, result) == duckdb_state.DuckDBError) {
-      val errorMessage = fromCString(duckdb_result_error(result))
+    Zone {
+      val result = alloc[duckdb_result]()
+      val state = duckdb_execute_prepared(!stmt, result)
+
+      if (state == duckdb_state.DuckDBError) {
+        val errorMessage = duckdb_result_error(result) match {
+          case null => "Unknown"
+          case reason => fromCString(reason)
+        }
+        duckdb_destroy_result(result)
+        throw new SQLException(s"Failed to perfrom update: $sql. Reason: $errorMessage")
+      }
+
+      val res = duckdb_rows_changed(result).toInt
       duckdb_destroy_result(result)
-      throw new SQLException(s"Failed to perfrom update: $sql. Reason: $errorMessage")
+      res
     }
-    else {
-      currentResultSet = DuckDBResultSet(this, result)
-      duckdb_rows_changed(result).toInt
+  }
+
+  def execute(): Boolean = {
+    checkClosed()
+    closeCurrentResultSet()
+
+    Zone {
+      val result = alloc[duckdb_result]()
+      val state = duckdb_execute_prepared(!stmt, result)
+      duckdb_destroy_result(result)
+      state != duckdb_state.DuckDBError
     }
   }
 

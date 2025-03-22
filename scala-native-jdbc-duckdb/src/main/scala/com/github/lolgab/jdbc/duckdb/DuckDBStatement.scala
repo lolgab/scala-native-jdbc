@@ -84,14 +84,19 @@ class DuckDBStatement(connection: DuckDBConnection, conn: Ptr[duckdb_connection]
 
     Zone {
       val result = malloc(sizeof[duckdb_result]).asInstanceOf[Ptr[duckdb_result]]
-      if (duckdb_query(!conn, toCString(sql), result) == duckdb_state.DuckDBError) {
-        val errorMessage = fromCString(duckdb_result_error(result))
+      val state = duckdb_query(!conn, toCString(sql), result)
+      if (state == duckdb_state.DuckDBError) {
+        val errorMessage = duckdb_result_error(result) match {
+          case null => "Unknown"
+          case reason => fromCString(reason)
+        }
         duckdb_destroy_result(result)
         throw new SQLException(s"Failed to perfrom query: $sql. Reason: $errorMessage")
       }
+
       currentResultSet = DuckDBResultSet(this, result)
+      currentResultSet
     }
-    currentResultSet
   }
 
   override def executeUpdate(sql: String): Int = {
@@ -99,14 +104,19 @@ class DuckDBStatement(connection: DuckDBConnection, conn: Ptr[duckdb_connection]
     closeCurrentResultSet()
 
     Zone {
-      val result = malloc(sizeof[duckdb_result]).asInstanceOf[Ptr[duckdb_result]]
+      val result = alloc[duckdb_result]()
       if (duckdb_query(!conn, toCString(sql), result) == duckdb_state.DuckDBError) {
-        val errorMessage = fromCString(duckdb_result_error(result))
+        val errorMessage = duckdb_result_error(result) match {
+          case null => "Unknown"
+          case reason => fromCString(reason)
+        }
         duckdb_destroy_result(result)
         throw new SQLException(s"Failed to perfrom update: $sql. Reason: $errorMessage")
       }
-      currentResultSet = DuckDBResultSet(this, result)
-      duckdb_rows_changed(result).toInt
+
+      val res = duckdb_rows_changed(result).toInt
+      duckdb_destroy_result(result)
+      res
     }
   }
 
@@ -115,9 +125,9 @@ class DuckDBStatement(connection: DuckDBConnection, conn: Ptr[duckdb_connection]
     closeCurrentResultSet()
 
     Zone {
-      val result = malloc(sizeof[duckdb_result]).asInstanceOf[Ptr[duckdb_result]]
+      val result = alloc[duckdb_result]()
       val state = duckdb_query(!conn, toCString(sql), result)
-      currentResultSet = DuckDBResultSet(this, result)
+      duckdb_destroy_result(result)
       state != duckdb_state.DuckDBError
     }
   }
