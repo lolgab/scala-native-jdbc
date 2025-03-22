@@ -441,82 +441,94 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
   }
 
   override def getShort(columnIndex: Int): Short = {
-    checkClosed()
-    checkColumnIndex(columnIndex)
-    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
-    val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[Short]]
-    val validity = duckdb_vector_get_validity(column)
-    if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
-      _lastWasNull = false
-      data(_chunkIdx.toUSize)
-    }
-    else {
-      _lastWasNull = true
-      0
-    }
+    getIntegerNumber(columnIndex).toShort
   }
 
   override def getInt(columnIndex: Int): Int = {
-    checkClosed()
-    checkColumnIndex(columnIndex)
-    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
-    val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[Int]]
-    val validity = duckdb_vector_get_validity(column)
-    if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
-      _lastWasNull = false
-      data(_chunkIdx.toUSize)
-    }
-    else {
-      _lastWasNull = true
-      0
-    }
+    getIntegerNumber(columnIndex).toInt
   }
 
   override def getLong(columnIndex: Int): Long = {
+    getIntegerNumber(columnIndex)
+  }
+
+  private def getIntegerNumber(columnIndex: Int): Long = {
     checkClosed()
     checkColumnIndex(columnIndex)
     val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
-    val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[Long]]
     val validity = duckdb_vector_get_validity(column)
-    if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
-      _lastWasNull = false
-      data(_chunkIdx.toUSize)
-    }
-    else {
+    if (!duckdb_validity_row_is_valid(validity, _chunkIdx)) {
       _lastWasNull = true
       0L
+    }
+    else {
+      _lastWasNull = false
+      val data = duckdb_vector_get_data(column)
+      duckdb_column_type(result, (columnIndex - 1).toULong) match {
+        case DUCKDB_TYPE.DUCKDB_TYPE_TINYINT =>
+          data.asInstanceOf[Ptr[Byte]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT =>
+          data.asInstanceOf[Ptr[Short]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_INTEGER =>
+          data.asInstanceOf[Ptr[Int]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT =>
+          data.asInstanceOf[Ptr[Long]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT =>
+          data.asInstanceOf[Ptr[UByte]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT =>
+          data.asInstanceOf[Ptr[UShort]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER =>
+          data.asInstanceOf[Ptr[UInt]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_UBIGINT =>
+          data.asInstanceOf[Ptr[ULong]](_chunkIdx.toUSize).toLong
+        case _ => 0L
+      }
     }
   }
 
   override def getDouble(columnIndex: Int): Double = {
-    checkClosed()
-    checkColumnIndex(columnIndex)
-    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
-    val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[Double]]
-    val validity = duckdb_vector_get_validity(column)
-    if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
-      _lastWasNull = false
-      data(_chunkIdx.toUSize)
-    }
-    else {
-      _lastWasNull = true
-      0.0d
-    }
+    getFloatingNumber(columnIndex).toDouble
   }
 
   override def getFloat(columnIndex: Int): Float = {
+    getFloatingNumber(columnIndex).toFloat
+  }
+
+  private def getFloatingNumber(columnIndex: Int): Double = {
     checkClosed()
     checkColumnIndex(columnIndex)
     val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
-    val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[Float]]
     val validity = duckdb_vector_get_validity(column)
-    if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
-      _lastWasNull = false
-      data(_chunkIdx.toUSize)
+    if (!duckdb_validity_row_is_valid(validity, _chunkIdx)) {
+      _lastWasNull = true
+      0L
     }
     else {
-      _lastWasNull = true
-      0.0f
+      _lastWasNull = false
+      val data = duckdb_vector_get_data(column)
+      duckdb_column_type(result, (columnIndex - 1).toULong) match {
+        case DUCKDB_TYPE.DUCKDB_TYPE_TINYINT =>
+          data.asInstanceOf[Ptr[Byte]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT =>
+          data.asInstanceOf[Ptr[Short]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_INTEGER =>
+          data.asInstanceOf[Ptr[Int]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT =>
+          data.asInstanceOf[Ptr[Long]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT =>
+          data.asInstanceOf[Ptr[UByte]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT =>
+          data.asInstanceOf[Ptr[UShort]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER =>
+          data.asInstanceOf[Ptr[UInt]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_UBIGINT =>
+          data.asInstanceOf[Ptr[ULong]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_FLOAT =>
+          data.asInstanceOf[Ptr[Float]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_DOUBLE =>
+          data.asInstanceOf[Ptr[Double]](_chunkIdx.toUSize).toDouble
+        case _ => Double.NaN
+      }
     }
   }
 
