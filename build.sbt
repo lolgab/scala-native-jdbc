@@ -72,11 +72,11 @@ lazy val `scala-native-jdbc-duckdb` = project
   .enablePlugins(ScalaNativePlugin)
   .dependsOn(`scala-native-jdbc`)
 
-lazy val `scala-native-jdbc-tests` = crossProject(JVMPlatform, NativePlatform)
+lazy val `scala-native-jdbc-sqlite-tests` = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
-  .in(file("scala-native-jdbc-tests"))
+  .in(file("scala-native-jdbc-sqlite-tests"))
   .settings(
-    name := "scala-native-jdbc-tests",
+    name := "scala-native-jdbc-sqlite-tests",
     noPublishSettings,
     libraryDependencies ++= Seq(
       "org.scalameta" %%% "munit" % "1.0.0" % Test
@@ -145,8 +145,10 @@ lazy val root = project
     `scala-native-jdbc`,
     `scala-native-jdbc-sqlite`,
     `scala-native-jdbc-duckdb`,
-    `scala-native-jdbc-tests`.jvm,
-    `scala-native-jdbc-tests`.native
+    `scala-native-jdbc-sqlite-tests`.jvm,
+    `scala-native-jdbc-sqlite-tests`.native,
+    `scala-native-jdbc-duckdb-tests`.jvm,
+    `scala-native-jdbc-duckdb-tests`.native
   )
 
 lazy val noPublishSettings = Seq(
