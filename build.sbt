@@ -67,7 +67,23 @@ lazy val `scala-native-jdbc-sqlite` = project
 lazy val `scala-native-jdbc-duckdb` = project
   .in(file("scala-native-jdbc-duckdb"))
   .settings(
-    name := "scala-native-jdbc-duckdb"
+    name := "scala-native-jdbc-duckdb",
+    Compile / resourceGenerators += Def.task {
+      val url = "https://raw.githubusercontent.com/duckdb/duckdb/refs/tags/v1.2.1/src/include/duckdb.h"
+      val targetDir =
+        (Compile / resourceManaged).value / "scala-native" / "duckdb"
+      val tempDir = IO.createTemporaryDirectory
+
+      // Create target directory
+      targetDir.mkdirs()
+
+      // Download  to temp directory
+      val tempHeader = tempDir / "duckdb.h"
+      sbt.io.Using.urlInputStream(new URL(url)) { inputStream =>
+        IO.transfer(inputStream, targetDir / "duckdb.h")
+      }
+      Seq(targetDir / "duckdb.h")
+    }.taskValue
   )
   .enablePlugins(ScalaNativePlugin)
   .dependsOn(`scala-native-jdbc`)
