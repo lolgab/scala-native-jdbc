@@ -1,22 +1,19 @@
-package com.github.lolgab.jdbc.sqlite
+package com.github.lolgab.jdbc.duckdb
 
-import java.sql.*
-import com.github.lolgab.jdbc.sqlite.internal.SQLiteOps
-import com.github.lolgab.jdbc.sqlite.internal.constants.*
-import com.github.lolgab.jdbc.sqlite.internal.structs.*
-import com.github.lolgab.jdbc.sqlite.internal.functions.*
+import com.github.lolgab.jdbc.duckdb.internal.duckdb.all.*
 import com.github.lolgab.jdbc.SimpleResultSet
-import scala.scalanative.unsafe.*
 import java.io.InputStream
-import java.{util => ju}
 import java.io.Reader
 import java.net.URL
+import java.sql.*
+import java.{util => ju}
+import scala.scalanative.unsafe.*
+import scala.scalanative.unsigned.*
+import scala.scalanative.libc.stdlib.*
 
-class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sqlite3_stmt]) extends SimpleResultSet {
+class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) extends SimpleResultSet {
 
   override def deleteRow(): Unit = ???
-
-  override def getShort(columnIndex: Int): Short = ???
 
   override def updateInt(columnIndex: Int, x: Int): Unit = ???
 
@@ -350,32 +347,47 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   private var _closed = false
   private var _lastWasNull = false
+  private var _chunkNum = 0
   private var _row = 0
   private var _isBeforeFirst = true
   private var _isAfterLast = false
+  private var _currentChunk: Ptr[duckdb_data_chunk] = null
+  private var _chunkIdx: idx_t = 0.toULong
 
   override def next(): Boolean = {
     checkClosed()
-    if (isAfterLast) return false
-
-    val result = sqlite3_step(stmt)
-    result match {
-      case SQLITE_ROW =>
-        _isBeforeFirst = false
-        _row += 1
-        true
-      case SQLITE_DONE =>
-        _isBeforeFirst = false
-        _isAfterLast = true
-        false
-      case _ =>
-        throw SQLiteOps.sqliteException(db, "Error while moving to next row")
+    if (isAfterLast) {
+      false
+    }
+    else if (_currentChunk != null && _chunkIdx < duckdb_data_chunk_get_size(!_currentChunk) - 1.toULong) {
+      _row = _row + 1
+      _chunkIdx = _chunkIdx + 1.toULong
+      true
+    }
+    else {
+      if (_currentChunk != null) duckdb_destroy_data_chunk(_currentChunk)
+      duckdb_fetch_chunk(result) match {
+        case chunk if chunk.value == null =>
+          _isBeforeFirst = false
+          _isAfterLast = true
+          _currentChunk = null
+          _chunkIdx = 0.toULong
+          false
+        case chunk =>
+          val rowCount = duckdb_data_chunk_get_size(chunk)
+          _isBeforeFirst = false
+          _row += 1
+          _currentChunk = malloc(sizeOf[duckdb_data_chunk]).asInstanceOf[Ptr[duckdb_data_chunk]]
+          !_currentChunk = chunk
+          _chunkIdx = 0.toULong
+          true
+      }
     }
   }
 
   override def close(): Unit = {
     if (!_closed) {
-      sqlite3_finalize(stmt)
+      duckdb_destroy_result(result)
       _closed = true
     }
   }
@@ -392,12 +404,12 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def isFirst(): Boolean = {
     checkClosed()
-    _row == 1 && !_isBeforeFirst && !_isAfterLast
+    _chunkNum == 1 && !_isBeforeFirst && !_isAfterLast
   }
 
   override def isLast(): Boolean = {
     checkClosed()
-    !_isBeforeFirst && !_isAfterLast && sqlite3_step(stmt) == SQLITE_DONE
+    !_isBeforeFirst && !_isAfterLast && _currentChunk == null
   }
 
   override def getRow(): Int = {
@@ -408,49 +420,136 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
   override def getString(columnIndex: Int): String = {
     checkClosed()
     checkColumnIndex(columnIndex)
-    val result = SQLiteOps.getString(stmt, columnIndex - 1)
-    _lastWasNull = result == null
-    result
+    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[duckdb_string_t]]
+    val validity = duckdb_vector_get_validity(column)
+    if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
+      val stringData = duckdb_string_t_data(data + _chunkIdx.toUSize)
+      if (stringData == null) {
+        _lastWasNull = true
+        null
+      }
+      else {
+        _lastWasNull = false
+        fromCString(stringData)
+      }
+    }
+    else {
+      _lastWasNull = true
+      null
+    }
+  }
+
+  override def getShort(columnIndex: Int): Short = {
+    getIntegerNumber(columnIndex).toShort
   }
 
   override def getInt(columnIndex: Int): Int = {
-    checkClosed()
-    checkColumnIndex(columnIndex)
-    val result = SQLiteOps.getInt(stmt, columnIndex - 1)
-    _lastWasNull = sqlite3_column_type(stmt, columnIndex - 1) == SQLITE_NULL
-    result
+    getIntegerNumber(columnIndex).toInt
   }
 
   override def getLong(columnIndex: Int): Long = {
+    getIntegerNumber(columnIndex)
+  }
+
+  private def getIntegerNumber(columnIndex: Int): Long = {
     checkClosed()
     checkColumnIndex(columnIndex)
-    val result = SQLiteOps.getLong(stmt, columnIndex - 1)
-    _lastWasNull = sqlite3_column_type(stmt, columnIndex - 1) == SQLITE_NULL
-    result
+    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val validity = duckdb_vector_get_validity(column)
+    if (!duckdb_validity_row_is_valid(validity, _chunkIdx)) {
+      _lastWasNull = true
+      0L
+    }
+    else {
+      _lastWasNull = false
+      val data = duckdb_vector_get_data(column)
+      duckdb_column_type(result, (columnIndex - 1).toULong) match {
+        case DUCKDB_TYPE.DUCKDB_TYPE_TINYINT =>
+          data.asInstanceOf[Ptr[Byte]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT =>
+          data.asInstanceOf[Ptr[Short]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_INTEGER =>
+          data.asInstanceOf[Ptr[Int]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT =>
+          data.asInstanceOf[Ptr[Long]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT =>
+          data.asInstanceOf[Ptr[UByte]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT =>
+          data.asInstanceOf[Ptr[UShort]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER =>
+          data.asInstanceOf[Ptr[UInt]](_chunkIdx.toUSize).toLong
+        case DUCKDB_TYPE.DUCKDB_TYPE_UBIGINT =>
+          data.asInstanceOf[Ptr[ULong]](_chunkIdx.toUSize).toLong
+        case _ => 0L
+      }
+    }
   }
 
   override def getDouble(columnIndex: Int): Double = {
-    checkClosed()
-    checkColumnIndex(columnIndex)
-    val result = SQLiteOps.getDouble(stmt, columnIndex - 1)
-    _lastWasNull = sqlite3_column_type(stmt, columnIndex - 1) == SQLITE_NULL
-    result
+    getFloatingNumber(columnIndex).toDouble
   }
 
   override def getFloat(columnIndex: Int): Float = {
-    getDouble(columnIndex).toFloat
+    getFloatingNumber(columnIndex).toFloat
+  }
+
+  private def getFloatingNumber(columnIndex: Int): Double = {
+    checkClosed()
+    checkColumnIndex(columnIndex)
+    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val validity = duckdb_vector_get_validity(column)
+    if (!duckdb_validity_row_is_valid(validity, _chunkIdx)) {
+      _lastWasNull = true
+      0L
+    }
+    else {
+      _lastWasNull = false
+      val data = duckdb_vector_get_data(column)
+      duckdb_column_type(result, (columnIndex - 1).toULong) match {
+        case DUCKDB_TYPE.DUCKDB_TYPE_TINYINT =>
+          data.asInstanceOf[Ptr[Byte]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT =>
+          data.asInstanceOf[Ptr[Short]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_INTEGER =>
+          data.asInstanceOf[Ptr[Int]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT =>
+          data.asInstanceOf[Ptr[Long]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT =>
+          data.asInstanceOf[Ptr[UByte]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT =>
+          data.asInstanceOf[Ptr[UShort]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER =>
+          data.asInstanceOf[Ptr[UInt]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_UBIGINT =>
+          data.asInstanceOf[Ptr[ULong]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_FLOAT =>
+          data.asInstanceOf[Ptr[Float]](_chunkIdx.toUSize).toDouble
+        case DUCKDB_TYPE.DUCKDB_TYPE_DOUBLE =>
+          data.asInstanceOf[Ptr[Double]](_chunkIdx.toUSize).toDouble
+        case _ => Double.NaN
+      }
+    }
   }
 
   override def getBoolean(columnIndex: Int): Boolean = {
-    getInt(columnIndex) != 0
+    checkClosed()
+    checkColumnIndex(columnIndex)
+    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[Boolean]]
+    val validity = duckdb_vector_get_validity(column)
+    if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
+      _lastWasNull = false
+      data(_chunkIdx.toUSize)
+    }
+    else {
+      _lastWasNull = true
+      false
+    }
   }
 
   override def getBytes(columnIndex: Int): scala.Array[Byte] = {
-    checkClosed()
-    checkColumnIndex(columnIndex)
-    val result = SQLiteOps.getBytes(stmt, columnIndex - 1)
-    _lastWasNull = result == null
-    result
+    ???
   }
 
   override def wasNull(): Boolean = {
@@ -458,22 +557,9 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
     _lastWasNull
   }
 
-
   private def getColumnCount(): Int = {
     checkClosed()
-    sqlite3_column_count(stmt)
-  }
-
-  private def getColumnName(column: Int): String = {
-    checkClosed()
-    checkColumnIndex(column)
-    fromCString(sqlite3_column_name(stmt, column - 1))
-  }
-
-  private def getColumnType(column: Int): Int = {
-    checkClosed()
-    checkColumnIndex(column)
-    sqlite3_column_type(stmt, column - 1)
+    duckdb_column_count(result).toInt
   }
 
   private def checkClosed(): Unit = {
@@ -493,7 +579,7 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
     var i = 0
     val count = getColumnCount()
     while (i < count) {
-      if (fromCString(sqlite3_column_name(stmt, i)) == columnLabel) {
+      if (fromCString(duckdb_column_name(result, i.toULong)) == columnLabel) {
         return i + 1
       }
       i += 1

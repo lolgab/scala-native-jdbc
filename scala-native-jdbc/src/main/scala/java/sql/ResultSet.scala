@@ -40,8 +40,14 @@ trait ResultSet extends AutoCloseable {
    */
   def getRow(): Int
 
+  /**
+   * Maps the given ResultSet column label to its ResultSet column index.
+   */
+  def findColumn(columnLabel: String): Int
+
   // Column value getters
   def getString(columnIndex: Int): String
+  def getShort(columnIndex: Int): Short
   def getInt(columnIndex: Int): Int
   def getLong(columnIndex: Int): Long
   def getDouble(columnIndex: Int): Double
@@ -52,27 +58,13 @@ trait ResultSet extends AutoCloseable {
 
   // Column value getters by column name
   def getString(columnLabel: String): String
+  def getShort(columnLabel: String): Short
   def getInt(columnLabel: String): Int
   def getLong(columnLabel: String): Long
   def getDouble(columnLabel: String): Double
   def getFloat(columnLabel: String): Float
   def getBoolean(columnLabel: String): Boolean
   def getBytes(columnLabel: String): scala.Array[Byte]
-
-  /**
-   * Retrieves the number of columns in this ResultSet object.
-   */
-  def getColumnCount(): Int
-
-  /**
-   * Retrieves the name of the designated column.
-   */
-  def getColumnName(column: Int): String
-
-  /**
-   * Retrieves the designated column's SQL type.
-   */
-  def getColumnType(column: Int): Int
 }
 
 object ResultSet {
