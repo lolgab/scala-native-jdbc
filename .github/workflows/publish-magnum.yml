@@ -1,4 +1,4 @@
-name: publish-scalasql
+name: publish-magnum
 
 on: workflow_dispatch
 
