@@ -1,5 +1,5 @@
 diff --git a/build.sbt b/build.sbt
-index 329c10a..24c41c0 100644
+index 329c10a..c3ef44d 100644
 --- a/build.sbt
 +++ b/build.sbt
 @@ -1,4 +1,4 @@
@@ -8,7 +8,22 @@ index 329c10a..24c41c0 100644
  ThisBuild / version := "1.3.1"
  ThisBuild / versionScheme := Some("early-semver")
  ThisBuild / scalaVersion := "3.3.0"
-@@ -38,39 +38,40 @@ val testcontainersVersion = "0.40.12"
+@@ -23,54 +23,46 @@ ThisBuild / developers := List(
+     url = url("https://augustnagro.com")
+   )
+ )
+-ThisBuild / publishMavenStyle := true
+-ThisBuild / pomIncludeRepository := { _ => false }
+-ThisBuild / publishTo := {
+-  val nexus = "https://oss.sonatype.org/"
+-  if (isSnapshot.value)
+-    Some("snapshots" at nexus + "content/repositories/snapshots")
+-  else
+-    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+-}
+ ThisBuild / publish / skip := true
+ 
+ val testcontainersVersion = "0.40.12"
  
  lazy val root = project
    .in(file("."))
