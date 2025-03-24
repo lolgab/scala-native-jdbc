@@ -24,4 +24,4 @@ else
     exit 1
 fi
 
-sbt ci-release
+GITHUB_REF="1.3.1" sbt ci-release
