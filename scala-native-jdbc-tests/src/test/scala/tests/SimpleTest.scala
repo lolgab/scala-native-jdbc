@@ -165,4 +165,14 @@ class SimpleTest extends munit.FunSuite {
     }
     assertEquals(builder.result(), Seq(("a", 1), ("b", 2)))
   }
+
+  test("JDBCType name") {
+    assertEquals(JDBCType.ARRAY.name(), "ARRAY")
+  }
+  test("JDBCType getName") {
+    assertEquals(JDBCType.BINARY.getName(), "BINARY")
+  }
+  test("JDBCType toString") {
+    assertEquals(JDBCType.CLOB.toString(), "CLOB")
+  }
 }
