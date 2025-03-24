@@ -41,7 +41,8 @@ enum JDBCType(private val vendorTypeNumber: Int) extends Enum[JDBCType] {
   case VARBINARY extends JDBCType(Types.VARBINARY)
   case VARCHAR extends JDBCType(Types.VARCHAR)
 
-  def getVendorTypeNumber: Integer = vendorTypeNumber
+  def getVendorTypeNumber(): Integer = vendorTypeNumber
+  def getName(): String = name()
 }
 object JDBCType {
   def fromVendorTypeNumber(vendorTypeNumber: Int): JDBCType = {
