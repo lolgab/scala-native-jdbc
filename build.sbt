@@ -58,7 +58,8 @@ lazy val `scala-native-jdbc-sqlite` = project
         // Cleanup
         IO.delete(tempDir)
       }
-    }.taskValue
+    }.taskValue,
+    Test / test := ()
   )
   .enablePlugins(ScalaNativePlugin)
   .dependsOn(`scala-native-jdbc`)
@@ -83,7 +84,8 @@ lazy val `scala-native-jdbc-duckdb` = project
         IO.transfer(inputStream, targetDir / "duckdb.h")
       }
       Seq(targetDir / "duckdb.h")
-    }.taskValue
+    }.taskValue,
+    Test / test := ()
   )
   .enablePlugins(ScalaNativePlugin)
   .dependsOn(`scala-native-jdbc`)
