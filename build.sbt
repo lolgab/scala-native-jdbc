@@ -115,6 +115,7 @@ lazy val `scala-native-jdbc-sqlite-tests` = crossProject(JVMPlatform, NativePlat
     _.dependsOn(`scala-native-jdbc-sqlite`)
   )
   .jvmSettings(
+    Test / fork := true,
     libraryDependencies ++= Seq(
       "org.xerial" % "sqlite-jdbc" % "3.43.0.0",
     )
@@ -148,6 +149,7 @@ lazy val `scala-native-jdbc-duckdb-tests` = crossProject(JVMPlatform, NativePlat
     _.dependsOn(`scala-native-jdbc-duckdb`)
   )
   .jvmSettings(
+    Test / fork := true,
     libraryDependencies ++= Seq(
       "org.duckdb" % "duckdb_jdbc" % "1.2.1"
     )
