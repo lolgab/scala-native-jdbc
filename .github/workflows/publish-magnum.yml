@@ -1,12 +1,6 @@
-name: ci
+name: publish-magnum
 
-on:
-  push:
-    branches:
-      - main
-    tags:
-      - "*"
-  pull_request:
+on: workflow_dispatch
 
 jobs:
   build:
@@ -21,14 +15,12 @@ jobs:
           distribution: "temurin"
       - name: Setup sbt launcher
         uses: sbt/setup-sbt@v1
-      - name: Run test
-        run: sbt test
-      - name: Publish to Sonatype
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Publish magnum to Sonatype
+        run: |
+          cd magnum
+          ./magnum.sh
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-        run: |
-          sbt ci-release
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}

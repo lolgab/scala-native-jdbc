@@ -1,6 +1,6 @@
 import xerial.sbt.Sonatype._
 
-ThisBuild / version := "0.0.2-SNAPSHOT"
+ThisBuild / version := "0.0.2"
 ThisBuild / scalaVersion := "3.3.4"
 // ThisBuild / versionScheme := Some("early-semver")
 

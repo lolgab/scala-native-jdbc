@@ -1,0 +1,90 @@
+diff --git a/build.sbt b/build.sbt
+index 329c10a..10276a9 100644
+--- a/build.sbt
++++ b/build.sbt
+@@ -1,4 +1,4 @@
+-ThisBuild / organization := "com.augustnagro"
++ThisBuild / organization := "com.github.lolgab"
+ ThisBuild / version := "1.3.1"
+ ThisBuild / versionScheme := Some("early-semver")
+ ThisBuild / scalaVersion := "3.3.0"
+@@ -23,54 +23,18 @@ ThisBuild / developers := List(
+     url = url("https://augustnagro.com")
+   )
+ )
+-ThisBuild / publishMavenStyle := true
+-ThisBuild / pomIncludeRepository := { _ => false }
+-ThisBuild / publishTo := {
+-  val nexus = "https://oss.sonatype.org/"
+-  if (isSnapshot.value)
+-    Some("snapshots" at nexus + "content/repositories/snapshots")
+-  else
+-    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+-}
+ ThisBuild / publish / skip := true
+ 
+ val testcontainersVersion = "0.40.12"
+ 
+ lazy val root = project
+   .in(file("."))
+-  .aggregate(magnum, magnumPg)
++  .aggregate(magnum)
+ 
+ lazy val magnum = project
+   .in(file("magnum"))
+   .settings(
+     Test / fork := true,
+-    publish / skip := false,
+-    libraryDependencies ++= Seq(
+-      "org.scalameta" %% "munit" % "0.7.29" % Test,
+-      "com.dimafeng" %% "testcontainers-scala-munit" % testcontainersVersion % Test,
+-      "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion % Test,
+-      "org.postgresql" % "postgresql" % "42.6.0" % Test,
+-      "com.dimafeng" %% "testcontainers-scala-mysql" % testcontainersVersion % Test,
+-      "mysql" % "mysql-connector-java" % "8.0.32" % Test,
+-      "com.h2database" % "h2" % "2.1.214" % Test,
+-      "com.dimafeng" %% "testcontainers-scala-oracle-xe" % testcontainersVersion % Test,
+-      "com.oracle.database.jdbc" % "ojdbc11" % "21.9.0.0" % Test,
+-      "com.dimafeng" %% "testcontainers-scala-clickhouse" % testcontainersVersion % Test,
+-      "com.clickhouse" % "clickhouse-jdbc" % "0.4.1" % Test classifier "http",
+-      "org.xerial" % "sqlite-jdbc" % "3.41.0.0" % Test
+-    )
+-  )
+-
+-lazy val magnumPg = project
+-  .in(file("magnum-pg"))
+-  .dependsOn(magnum)
+-  .settings(
+-    Test / fork := true,
+-    publish / skip := false,
+-    libraryDependencies ++= Seq(
+-      "org.postgresql" % "postgresql" % "42.6.0" % "provided",
+-      "org.scalameta" %% "munit" % "0.7.29" % Test,
+-      "com.dimafeng" %% "testcontainers-scala-munit" % testcontainersVersion % Test,
+-      "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersVersion % Test
+-    )
++    publish / skip := false
+   )
++  .enablePlugins(ScalaNativePlugin)
+diff --git a/magnum/src/main/scala/com/augustnagro/magnum/util.scala b/magnum/src/main/scala/com/augustnagro/magnum/util.scala
+index f950e51..10198dc 100644
+--- a/magnum/src/main/scala/com/augustnagro/magnum/util.scala
++++ b/magnum/src/main/scala/com/augustnagro/magnum/util.scala
+@@ -170,7 +170,7 @@ def batchUpdate[T](values: Iterable[T])(f: T => Update)(using
+   end match
+ end batchUpdate
+ 
+-private val Log = System.getLogger("com.augustnagro.magnum")
++private lazy val Log = System.getLogger("com.augustnagro.magnum")
+ 
+ private def parseParams(params: Any): Iterator[Iterator[Any]] =
+   params match
+diff --git a/project/plugins.sbt b/project/plugins.sbt
+index 4176796..6f2a50c 100644
+--- a/project/plugins.sbt
++++ b/project/plugins.sbt
+@@ -1,2 +1,3 @@
+ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
+-addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.3.0")
++addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.5.7")
++addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.9.2")
