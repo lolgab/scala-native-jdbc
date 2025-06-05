@@ -3,7 +3,7 @@
 set -e
 
 REPO_URL="https://github.com/com-lihaoyi/scalasql.git"
-VERSION="0.1.15"
+VERSION="0.1.20"
 REPO_DIR="target/scalasql"
 PATCH_FILE="scalasql.patch"
 
@@ -26,4 +26,4 @@ fi
 
 git add .
 
-./mill mill.scalalib.PublishModule/
+./mill --import "ivy:com.lihaoyi::mill-contrib-sonatypecentral:" mill.contrib.sonatypecentral.SonatypeCentralPublishModule/publishAll --publishArtifacts __.publishArtifacts

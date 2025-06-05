@@ -1,89 +1,56 @@
 diff --git a/build.mill b/build.mill
-index e360e3c..1411ba4 100644
+index 592bbc3..9c193fb 100644
 --- a/build.mill
 +++ b/build.mill
-@@ -6,18 +6,19 @@ import $ivy.`com.github.lolgab::mill-mima::0.1.0`
- import $ivy.`com.goyeau::mill-scalafix::0.4.2`
+@@ -6,13 +6,15 @@ import $ivy.`com.github.lolgab::mill-mima::0.1.1`
+ import $ivy.`com.goyeau::mill-scalafix::0.5.1`
  import de.tobiasroeser.mill.vcs.version.VcsVersion
  import com.goyeau.mill.scalafix.ScalafixModule
 -import mill._, scalalib._, publish._
 +import mill._, scalalib._, scalanativelib._, publish._
  
--val scalaVersions = Seq("2.13.12", "3.4.2")
-+val scalaVersions = Seq("3.4.2")
+ val scala3 = "3.6.2"
+-val scalaVersions = Seq("2.13.12", scala3)
++val scalaVersions = Seq(scala3)
+ val scala3NamedTuples = "3.7.0"
  
--trait Common extends CrossScalaModule with PublishModule with ScalafixModule{
-+trait Common extends CrossScalaModule with ScalaNativeModule with PublishModule with ScalafixModule{
-   def scalaVersion = crossScalaVersion
+-trait CommonBase extends ScalaModule with PublishModule with ScalafixModule { common =>
++trait CommonBase extends ScalaNativeModule with PublishModule with ScalafixModule { common =>
++
 +  def scalaNativeVersion = "0.5.7"
  
    def publishVersion = VcsVersion.vcsState().format()
  
-   def pomSettings = PomSettings(
-     description = artifactName(),
--    organization = "com.lihaoyi",
-+    organization = "com.github.lolgab",
-     url = "https://github.com/com-lihaoyi/scalasql",
-     licenses = Seq(License.MIT),
-     versionControl = VersionControl.github(
-@@ -39,47 +40,42 @@ trait Common extends CrossScalaModule with PublishModule with ScalafixModule{
- object scalasql extends Cross[ScalaSql](scalaVersions)
- trait ScalaSql extends Common{ common =>
-   def moduleDeps = Seq(query, operations)
--  def ivyDeps = Agg(
--    ivy"org.apache.logging.log4j:log4j-api:2.20.0",
--    ivy"org.apache.logging.log4j:log4j-core:2.20.0",
--    ivy"org.apache.logging.log4j:log4j-slf4j-impl:2.20.0",
--
--  ) ++ Option.when(scalaVersion().startsWith("2."))(
-+  def ivyDeps = Agg.empty[Dep] ++ Option.when(scalaVersion().startsWith("2."))(
-     ivy"org.scala-lang:scala-reflect:${scalaVersion()}"
-   )
+@@ -82,12 +84,12 @@ object `scalasql-namedtuples` extends CommonBase {
+   //   super.scalacOptions() :+ "-Xprint:inlining"
+   // }
  
- 
--  object test extends ScalaTests with ScalafixModule{
--    def scalacOptions = common.scalacOptions
--    def ivyDeps = Agg(
--      ivy"com.github.vertical-blank:sql-formatter:2.0.4",
--      ivy"com.lihaoyi::mainargs:0.4.0",
--      ivy"com.lihaoyi::os-lib:0.9.1",
--      ivy"com.lihaoyi::upickle:3.1.3",
--      ivy"com.lihaoyi::utest:0.8.2",
--      ivy"com.h2database:h2:2.2.224",
--      ivy"org.xerial:sqlite-jdbc:3.43.0.0",
--      ivy"org.testcontainers:postgresql:1.19.1",
--      ivy"org.postgresql:postgresql:42.6.0",
--      ivy"org.testcontainers:mysql:1.19.1",
--      ivy"mysql:mysql-connector-java:8.0.33",
--      ivy"com.zaxxer:HikariCP:5.1.0"
--    )
--
--    def testFramework = "scalasql.UtestFramework"
--
--    def forkArgs = Seq("-Duser.timezone=Asia/Singapore")
--    def forkEnv = Map("MILL_WORKSPACE_ROOT" -> T.workspace.toString())
+-  object test extends CommonTest {
+-    def resources = scalasql(scala3).test.resources
+-    def moduleDeps = super.moduleDeps ++ Seq(scalasql(scala3), scalasql(scala3).test)
+-    def recordedTestsFile: String = "recordedTestsNT.json"
+-    def recordedSuiteDescriptionsFile: String = "recordedSuiteDescriptionsNT.json"
 -  }
-+  // object test extends ScalaNativeTests with ScalafixModule{
-+  //   def scalacOptions = common.scalacOptions
-+  //   def ivyDeps = Agg(
-+  //     ivy"com.github.vertical-blank:sql-formatter:2.0.4",
-+  //     ivy"com.lihaoyi::mainargs:0.4.0",
-+  //     ivy"com.lihaoyi::os-lib:0.9.1",
-+  //     ivy"com.lihaoyi::upickle:3.1.3",
-+  //     ivy"com.lihaoyi::utest:0.8.2",
-+  //     ivy"com.h2database:h2:2.2.224",
-+  //     ivy"org.xerial:sqlite-jdbc:3.43.0.0",
-+  //     ivy"org.testcontainers:postgresql:1.19.1",
-+  //     ivy"org.postgresql:postgresql:42.6.0",
-+  //     ivy"org.testcontainers:mysql:1.19.1",
-+  //     ivy"mysql:mysql-connector-java:8.0.33",
-+  //     ivy"com.zaxxer:HikariCP:5.1.0"
-+  //   )
-+
-+  //   def testFramework = "scalasql.UtestFramework"
-+
-+  //   def forkArgs = Seq("-Duser.timezone=Asia/Singapore")
-+  //   def forkEnv = Map("MILL_WORKSPACE_ROOT" -> T.workspace.toString())
++  // object test extends CommonTest {
++  //   def resources = scalasql(scala3).test.resources
++  //   def moduleDeps = super.moduleDeps ++ Seq(scalasql(scala3), scalasql(scala3).test)
++  //   def recordedTestsFile: String = "recordedTestsNT.json"
++  //   def recordedSuiteDescriptionsFile: String = "recordedSuiteDescriptionsNT.json"
++  // }
+ }
+ 
+ object scalasql extends Cross[ScalaSql](scalaVersions)
+@@ -99,19 +101,19 @@ trait ScalaSql extends Common { common =>
+ 
+   override def consoleScalacOptions: T[Seq[String]] = Seq("-Xprint:typer")
+ 
+-  object test extends CommonTest {
+-    def recordedTestsFile: String = "recordedTests.json"
+-    def recordedSuiteDescriptionsFile: String = "recordedSuiteDescriptions.json"
+-  }
++  // object test extends CommonTest {
++  //   def recordedTestsFile: String = "recordedTests.json"
++  //   def recordedSuiteDescriptionsFile: String = "recordedSuiteDescriptions.json"
 +  // }
  
    private def indent(code: Iterable[String]): String =
@@ -93,10 +60,10 @@ index e360e3c..1411ba4 100644
      def ivyDeps = Agg(
 -      ivy"com.lihaoyi::geny:1.0.0",
 -      ivy"com.lihaoyi::sourcecode:0.3.1",
--      ivy"com.lihaoyi::pprint:0.8.1",
-+      ivy"com.lihaoyi::geny::1.1.1",
-+      ivy"com.lihaoyi::sourcecode::0.4.2",
-+      ivy"com.lihaoyi::pprint::0.9.0",
+-      ivy"com.lihaoyi::pprint:0.8.1"
++      ivy"com.lihaoyi::geny:1.1.1",
++      ivy"com.lihaoyi::sourcecode:0.4.2",
++      ivy"com.lihaoyi::pprint:0.9.0"
      ) ++ Option.when(scalaVersion().startsWith("2."))(
        ivy"org.scala-lang:scala-reflect:${scalaVersion()}"
      )
