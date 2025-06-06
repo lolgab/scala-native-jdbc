@@ -38,5 +38,5 @@ Add the following dependency to your build:
 Add the following dependency to your build:
 
 ```scala
-"com.github.lolgab" %%% "scalasql" % "0.1.15"
+"com.github.lolgab" %%% "scalasql" % "0.1.20"
 ```
