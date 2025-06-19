@@ -1,5 +1,3 @@
-import xerial.sbt.Sonatype._
-
 ThisBuild / version := "0.0.4-SNAPSHOT"
 ThisBuild / scalaVersion := "3.3.4"
 // ThisBuild / versionScheme := Some("early-semver")
@@ -59,7 +57,7 @@ lazy val `scala-native-jdbc-sqlite` = project
         IO.delete(tempDir)
       }
     }.taskValue,
-    Test / test := ()
+    Test / test := {}
   )
   .enablePlugins(ScalaNativePlugin)
   .dependsOn(`scala-native-jdbc`)
@@ -85,7 +83,7 @@ lazy val `scala-native-jdbc-duckdb` = project
       }
       Seq(targetDir / "duckdb.h")
     }.taskValue,
-    Test / test := ()
+    Test / test :=  {}
   )
   .enablePlugins(ScalaNativePlugin)
   .dependsOn(`scala-native-jdbc`)
@@ -117,7 +115,7 @@ lazy val `scala-native-jdbc-sqlite-tests` = crossProject(JVMPlatform, NativePlat
   .jvmSettings(
     Test / fork := true,
     libraryDependencies ++= Seq(
-      "org.xerial" % "sqlite-jdbc" % "3.43.0.0",
+      "org.xerial" % "sqlite-jdbc" % "3.50.1.0",
     )
   )
 
