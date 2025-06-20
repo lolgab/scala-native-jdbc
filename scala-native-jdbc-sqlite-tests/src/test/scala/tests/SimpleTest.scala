@@ -56,6 +56,27 @@ class SimpleTest extends munit.FunSuite {
     )
   }
 
+  test("PreparedStatement getGeneratedKeys") {
+    val connection = DriverManager.getConnection("jdbc:sqlite::memory:")
+    val statement = connection.createStatement()
+    statement.executeUpdate(
+      "CREATE TABLE test (name TEXT)"
+    )
+    def insertRow() =
+      val preparedStatement = connection.prepareStatement(
+        "INSERT INTO test (name) VALUES ('John')",
+        Statement.RETURN_GENERATED_KEYS
+      )
+      assertEquals(preparedStatement.executeUpdate(), 1)
+      val generatedResultSet = preparedStatement.getGeneratedKeys()
+      generatedResultSet.next()
+      generatedResultSet.getLong(1)
+
+    assertEquals(insertRow(), 1L)
+    assertEquals(insertRow(), 2L)
+    assertEquals(insertRow(), 3L)
+  }
+
   test("complex test with multiple tables and joins") {
     val connection = DriverManager.getConnection("jdbc:sqlite::memory:")
     val statement = connection.createStatement()

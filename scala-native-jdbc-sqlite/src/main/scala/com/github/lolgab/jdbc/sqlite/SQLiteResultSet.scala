@@ -604,8 +604,9 @@ class SQLiteResultSet(
   }
 
   private def checkColumnIndex(columnIndex: Int): Unit = {
-    if (columnIndex < 1 || columnIndex > getColumnCount()) {
-      throw SQLException(s"Invalid column index: $columnIndex")
+    val columnCount = getColumnCount()
+    if (columnIndex < 1 || columnIndex > columnCount) {
+      throw SQLException(s"column $columnIndex out of bounds [1,$columnCount]")
     }
   }
 
