@@ -12,7 +12,11 @@ import java.{util => ju}
 import java.io.Reader
 import java.net.URL
 
-class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sqlite3_stmt]) extends SimpleResultSet {
+class SQLiteResultSet(
+    statement: SQLiteStatement,
+    db: Ptr[sqlite3],
+    stmt: Ptr[sqlite3_stmt]
+) extends SimpleResultSet {
 
   override def deleteRow(): Unit = ???
 
@@ -36,19 +40,37 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def updateBytes(columnIndex: Int, x: scala.Array[Byte]): Unit = ???
 
-  override def updateBytes(columnLabel: String, x: scala.Array[Byte]): Unit = ???
+  override def updateBytes(columnLabel: String, x: scala.Array[Byte]): Unit =
+    ???
 
-  override def updateAsciiStream(columnIndex: Int, x: InputStream, length: Int): Unit = ???
+  override def updateAsciiStream(
+      columnIndex: Int,
+      x: InputStream,
+      length: Int
+  ): Unit = ???
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream, length: Int): Unit = ???
+  override def updateAsciiStream(
+      columnLabel: String,
+      x: InputStream,
+      length: Int
+  ): Unit = ???
 
-  override def updateAsciiStream(columnIndex: Int, x: InputStream, length: Long): Unit = ???
+  override def updateAsciiStream(
+      columnIndex: Int,
+      x: InputStream,
+      length: Long
+  ): Unit = ???
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream, length: Long): Unit = ???
+  override def updateAsciiStream(
+      columnLabel: String,
+      x: InputStream,
+      length: Long
+  ): Unit = ???
 
   override def updateAsciiStream(columnIndex: Int, x: InputStream): Unit = ???
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream): Unit = ???
+  override def updateAsciiStream(columnLabel: String, x: InputStream): Unit =
+    ???
 
   override def rowDeleted(): Boolean = ???
 
@@ -80,21 +102,42 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def updateBlob(columnLabel: String, x: Blob): Unit = ???
 
-  override def updateBlob(columnIndex: Int, inputStream: InputStream, length: Long): Unit = ???
+  override def updateBlob(
+      columnIndex: Int,
+      inputStream: InputStream,
+      length: Long
+  ): Unit = ???
 
-  override def updateBlob(columnLabel: String, inputStream: InputStream, length: Long): Unit = ???
+  override def updateBlob(
+      columnLabel: String,
+      inputStream: InputStream,
+      length: Long
+  ): Unit = ???
 
-  override def updateBlob(columnIndex: Int, inputStream: InputStream): Unit = ???
+  override def updateBlob(columnIndex: Int, inputStream: InputStream): Unit =
+    ???
 
-  override def updateBlob(columnLabel: String, inputStream: InputStream): Unit = ???
+  override def updateBlob(columnLabel: String, inputStream: InputStream): Unit =
+    ???
 
-  override def updateNCharacterStream(columnIndex: Int, x: Reader, length: Long): Unit = ???
+  override def updateNCharacterStream(
+      columnIndex: Int,
+      x: Reader,
+      length: Long
+  ): Unit = ???
 
-  override def updateNCharacterStream(columnLabel: String, reader: Reader, length: Long): Unit = ???
+  override def updateNCharacterStream(
+      columnLabel: String,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
   override def updateNCharacterStream(columnIndex: Int, x: Reader): Unit = ???
 
-  override def updateNCharacterStream(columnLabel: String, reader: Reader): Unit = ???
+  override def updateNCharacterStream(
+      columnLabel: String,
+      reader: Reader
+  ): Unit = ???
 
   override def getNCharacterStream(columnIndex: Int): Reader = ???
 
@@ -106,17 +149,29 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def updateNString(columnLabel: String, nString: String): Unit = ???
 
-  override def updateBigDecimal(columnIndex: Int, x: java.math.BigDecimal): Unit = ???
+  override def updateBigDecimal(
+      columnIndex: Int,
+      x: java.math.BigDecimal
+  ): Unit = ???
 
-  override def updateBigDecimal(columnLabel: String, x: java.math.BigDecimal): Unit = ???
+  override def updateBigDecimal(
+      columnLabel: String,
+      x: java.math.BigDecimal
+  ): Unit = ???
 
   override def getObject(columnIndex: Int): Object = ???
 
   override def getObject(columnLabel: String): Object = ???
 
-  override def getObject(columnIndex: Int, map: ju.Map[String, Class[?]]): Object = ???
+  override def getObject(
+      columnIndex: Int,
+      map: ju.Map[String, Class[?]]
+  ): Object = ???
 
-  override def getObject(columnLabel: String, map: ju.Map[String, Class[?]]): Object = ???
+  override def getObject(
+      columnLabel: String,
+      map: ju.Map[String, Class[?]]
+  ): Object = ???
 
   override def getObject[T](columnIndex: Int, `type`: Class[T]): T = ???
 
@@ -156,9 +211,17 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def updateClob(columnLabel: String, x: Clob): Unit = ???
 
-  override def updateClob(columnIndex: Int, reader: Reader, length: Long): Unit = ???
+  override def updateClob(
+      columnIndex: Int,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
-  override def updateClob(columnLabel: String, reader: Reader, length: Long): Unit = ???
+  override def updateClob(
+      columnLabel: String,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
   override def updateClob(columnIndex: Int, reader: Reader): Unit = ???
 
@@ -166,17 +229,34 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def beforeFirst(): Unit = ???
 
-  override def updateBinaryStream(columnIndex: Int, x: InputStream, length: Int): Unit = ???
+  override def updateBinaryStream(
+      columnIndex: Int,
+      x: InputStream,
+      length: Int
+  ): Unit = ???
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream, length: Int): Unit = ???
+  override def updateBinaryStream(
+      columnLabel: String,
+      x: InputStream,
+      length: Int
+  ): Unit = ???
 
-  override def updateBinaryStream(columnIndex: Int, x: InputStream, length: Long): Unit = ???
+  override def updateBinaryStream(
+      columnIndex: Int,
+      x: InputStream,
+      length: Long
+  ): Unit = ???
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream, length: Long): Unit = ???
+  override def updateBinaryStream(
+      columnLabel: String,
+      x: InputStream,
+      length: Long
+  ): Unit = ???
 
   override def updateBinaryStream(columnIndex: Int, x: InputStream): Unit = ???
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream): Unit = ???
+  override def updateBinaryStream(columnLabel: String, x: InputStream): Unit =
+    ???
 
   override def updateTimestamp(columnIndex: Int, x: Timestamp): Unit = ???
 
@@ -224,11 +304,19 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def getCursorName(): String = ???
 
-  override def updateObject(columnIndex: Int, x: Object, scaleOrLength: Int): Unit = ???
+  override def updateObject(
+      columnIndex: Int,
+      x: Object,
+      scaleOrLength: Int
+  ): Unit = ???
 
   override def updateObject(columnIndex: Int, x: Object): Unit = ???
 
-  override def updateObject(columnLabel: String, x: Object, scaleOrLength: Int): Unit = ???
+  override def updateObject(
+      columnLabel: String,
+      x: Object,
+      scaleOrLength: Int
+  ): Unit = ???
 
   override def updateObject(columnLabel: String, x: Object): Unit = ???
 
@@ -240,17 +328,36 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def updateBoolean(columnLabel: String, x: Boolean): Unit = ???
 
-  override def updateCharacterStream(columnIndex: Int, x: Reader, length: Int): Unit = ???
+  override def updateCharacterStream(
+      columnIndex: Int,
+      x: Reader,
+      length: Int
+  ): Unit = ???
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader, length: Int): Unit = ???
+  override def updateCharacterStream(
+      columnLabel: String,
+      reader: Reader,
+      length: Int
+  ): Unit = ???
 
-  override def updateCharacterStream(columnIndex: Int, x: Reader, length: Long): Unit = ???
+  override def updateCharacterStream(
+      columnIndex: Int,
+      x: Reader,
+      length: Long
+  ): Unit = ???
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader, length: Long): Unit = ???
+  override def updateCharacterStream(
+      columnLabel: String,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
   override def updateCharacterStream(columnIndex: Int, x: Reader): Unit = ???
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader): Unit = ???
+  override def updateCharacterStream(
+      columnLabel: String,
+      reader: Reader
+  ): Unit = ???
 
   override def getType(): Int = ???
 
@@ -266,9 +373,17 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def updateNClob(columnLabel: String, nClob: NClob): Unit = ???
 
-  override def updateNClob(columnIndex: Int, reader: Reader, length: Long): Unit = ???
+  override def updateNClob(
+      columnIndex: Int,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
-  override def updateNClob(columnLabel: String, reader: Reader, length: Long): Unit = ???
+  override def updateNClob(
+      columnLabel: String,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
   override def updateNClob(columnIndex: Int, reader: Reader): Unit = ???
 
@@ -292,7 +407,8 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def getTimestamp(columnIndex: Int, cal: ju.Calendar): Timestamp = ???
 
-  override def getTimestamp(columnLabel: String, cal: ju.Calendar): Timestamp = ???
+  override def getTimestamp(columnLabel: String, cal: ju.Calendar): Timestamp =
+    ???
 
   override def getNClob(columnIndex: Int): NClob = ???
 
@@ -330,9 +446,15 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
 
   override def updateRef(columnLabel: String, x: Ref): Unit = ???
 
-  override def getBigDecimal(columnIndex: Int, scale: Int): java.math.BigDecimal = ???
+  override def getBigDecimal(
+      columnIndex: Int,
+      scale: Int
+  ): java.math.BigDecimal = ???
 
-  override def getBigDecimal(columnLabel: String, scale: Int): java.math.BigDecimal = ???
+  override def getBigDecimal(
+      columnLabel: String,
+      scale: Int
+  ): java.math.BigDecimal = ???
 
   override def getBigDecimal(columnIndex: Int): java.math.BigDecimal = ???
 
@@ -458,7 +580,6 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
     _lastWasNull
   }
 
-
   private def getColumnCount(): Int = {
     checkClosed()
     sqlite3_column_count(stmt)
@@ -500,4 +621,4 @@ class SQLiteResultSet(statement: SQLiteStatement, db: Ptr[sqlite3], stmt: Ptr[sq
     }
     throw SQLException(s"Column not found: $columnLabel")
   }
-} 
+}

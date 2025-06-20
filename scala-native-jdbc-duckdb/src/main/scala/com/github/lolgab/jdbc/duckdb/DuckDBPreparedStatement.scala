@@ -18,14 +18,20 @@ class DuckDBPreparedStatement(
     with PreparedStatement {
 
   private val stmt: Ptr[duckdb_prepared_statement] = {
-    val _stmt: Ptr[duckdb_prepared_statement] = malloc(sizeof[duckdb_prepared_statement]).asInstanceOf[Ptr[duckdb_prepared_statement]]
+    val _stmt: Ptr[duckdb_prepared_statement] = malloc(
+      sizeof[duckdb_prepared_statement]
+    ).asInstanceOf[Ptr[duckdb_prepared_statement]]
     Zone {
-      if (duckdb_prepare(!conn, toCString(sql), _stmt) == duckdb_state.DuckDBError) {
+      if (
+        duckdb_prepare(!conn, toCString(sql), _stmt) == duckdb_state.DuckDBError
+      ) {
         val errorMessage = duckdb_prepare_error(!_stmt) match {
-          case null => "Unknown"
+          case null   => "Unknown"
           case reason => fromCString(reason)
         }
-        throw new SQLException(s"Failed to prepare statement $sql. Reason: $errorMessage")
+        throw new SQLException(
+          s"Failed to prepare statement $sql. Reason: $errorMessage"
+        )
       }
       _stmt
     }
@@ -152,12 +158,14 @@ class DuckDBPreparedStatement(
 
     if (state == duckdb_state.DuckDBError) {
       val errorMessage = duckdb_result_error(result) match {
-        case null => "Unknown"
+        case null   => "Unknown"
         case reason => fromCString(reason)
       }
       duckdb_destroy_result(result)
       free(result)
-      throw new SQLException(s"Failed to perfrom query: $sql. Reason: $errorMessage")
+      throw new SQLException(
+        s"Failed to perfrom query: $sql. Reason: $errorMessage"
+      )
     }
 
     currentResultSet = DuckDBResultSet(this, result)
@@ -173,11 +181,13 @@ class DuckDBPreparedStatement(
 
       if (state == duckdb_state.DuckDBError) {
         val errorMessage = duckdb_result_error(result) match {
-          case null => "Unknown"
+          case null   => "Unknown"
           case reason => fromCString(reason)
         }
         duckdb_destroy_result(result)
-        throw new SQLException(s"Failed to perfrom update: $sql. Reason: $errorMessage")
+        throw new SQLException(
+          s"Failed to perfrom update: $sql. Reason: $errorMessage"
+        )
       }
 
       val res = duckdb_rows_changed(result).toInt
@@ -199,64 +209,131 @@ class DuckDBPreparedStatement(
   def setString(parameterIndex: Int, x: String): Unit = {
     checkClosed()
     Zone {
-      if (duckdb_bind_varchar(!stmt, parameterIndex.toUInt, toCString(x)) == duckdb_state.DuckDBError) {
-        throw new SQLException(s"Failed to bind string $x to parameter $parameterIndex")
+      if (
+        duckdb_bind_varchar(
+          !stmt,
+          parameterIndex.toUInt,
+          toCString(x)
+        ) == duckdb_state.DuckDBError
+      ) {
+        throw new SQLException(
+          s"Failed to bind string $x to parameter $parameterIndex"
+        )
       }
     }
   }
 
   def setShort(parameterIndex: Int, x: Short): Unit = {
     checkClosed()
-    if (duckdb_bind_int16(!stmt, parameterIndex.toUInt, x) == duckdb_state.DuckDBError) {
-      throw new SQLException(s"Failed to bind int $x to parameter $parameterIndex")
+    if (
+      duckdb_bind_int16(
+        !stmt,
+        parameterIndex.toUInt,
+        x
+      ) == duckdb_state.DuckDBError
+    ) {
+      throw new SQLException(
+        s"Failed to bind int $x to parameter $parameterIndex"
+      )
     }
   }
 
   def setInt(parameterIndex: Int, x: Int): Unit = {
     checkClosed()
-    if (duckdb_bind_int32(!stmt, parameterIndex.toUInt, x) == duckdb_state.DuckDBError) {
-      throw new SQLException(s"Failed to bind int $x to parameter $parameterIndex")
+    if (
+      duckdb_bind_int32(
+        !stmt,
+        parameterIndex.toUInt,
+        x
+      ) == duckdb_state.DuckDBError
+    ) {
+      throw new SQLException(
+        s"Failed to bind int $x to parameter $parameterIndex"
+      )
     }
   }
 
   def setLong(parameterIndex: Int, x: Long): Unit = {
     checkClosed()
-    if (duckdb_bind_int64(!stmt, parameterIndex.toUInt, x) == duckdb_state.DuckDBError) {
-      throw new SQLException(s"Failed to bind long $x to parameter $parameterIndex")
+    if (
+      duckdb_bind_int64(
+        !stmt,
+        parameterIndex.toUInt,
+        x
+      ) == duckdb_state.DuckDBError
+    ) {
+      throw new SQLException(
+        s"Failed to bind long $x to parameter $parameterIndex"
+      )
     }
   }
 
   def setDouble(parameterIndex: Int, x: Double): Unit = {
     checkClosed()
-    if (duckdb_bind_double(!stmt, parameterIndex.toUInt, x) == duckdb_state.DuckDBError) {
-      throw new SQLException(s"Failed to bind double $x to parameter $parameterIndex")
+    if (
+      duckdb_bind_double(
+        !stmt,
+        parameterIndex.toUInt,
+        x
+      ) == duckdb_state.DuckDBError
+    ) {
+      throw new SQLException(
+        s"Failed to bind double $x to parameter $parameterIndex"
+      )
     }
   }
 
   def setFloat(parameterIndex: Int, x: Float): Unit = {
     checkClosed()
-    if (duckdb_bind_float(!stmt, parameterIndex.toUInt, x) == duckdb_state.DuckDBError) {
-      throw new SQLException(s"Failed to bind float $x to parameter $parameterIndex")
+    if (
+      duckdb_bind_float(
+        !stmt,
+        parameterIndex.toUInt,
+        x
+      ) == duckdb_state.DuckDBError
+    ) {
+      throw new SQLException(
+        s"Failed to bind float $x to parameter $parameterIndex"
+      )
     }
   }
 
   def setBoolean(parameterIndex: Int, x: Boolean): Unit = {
     checkClosed()
-    if (duckdb_bind_boolean(!stmt, parameterIndex.toUInt, x) == duckdb_state.DuckDBError) {
-      throw new SQLException(s"Failed to bind boolean $x to parameter $parameterIndex")
+    if (
+      duckdb_bind_boolean(
+        !stmt,
+        parameterIndex.toUInt,
+        x
+      ) == duckdb_state.DuckDBError
+    ) {
+      throw new SQLException(
+        s"Failed to bind boolean $x to parameter $parameterIndex"
+      )
     }
   }
 
   def setNull(parameterIndex: Int, sqlType: Int): Unit = {
     checkClosed()
-    if (duckdb_bind_null(!stmt, parameterIndex.toUInt) == duckdb_state.DuckDBError) {
+    if (
+      duckdb_bind_null(!stmt, parameterIndex.toUInt) == duckdb_state.DuckDBError
+    ) {
       throw new SQLException(s"Failed to null to parameter $parameterIndex")
     }
   }
 
   def setBytes(parameterIndex: Int, x: scala.Array[Byte]): Unit = {
-    if (duckdb_bind_blob(!stmt, parameterIndex.toUInt, x.at(0), x.size.toUInt) == duckdb_state.DuckDBError) {
-      throw new SQLException(s"Failed to bind byte array to parameter $parameterIndex")
+    if (
+      duckdb_bind_blob(
+        !stmt,
+        parameterIndex.toUInt,
+        x.at(0),
+        x.size.toUInt
+      ) == duckdb_state.DuckDBError
+    ) {
+      throw new SQLException(
+        s"Failed to bind byte array to parameter $parameterIndex"
+      )
     }
   }
 

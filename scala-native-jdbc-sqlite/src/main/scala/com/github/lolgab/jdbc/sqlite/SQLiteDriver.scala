@@ -10,7 +10,10 @@ class SQLiteDriver extends Driver {
 
   override def getParentLogger(): Logger = ???
 
-  override def getPropertyInfo(url: String, info: ju.Properties): scala.Array[DriverPropertyInfo] = ???
+  override def getPropertyInfo(
+      url: String,
+      info: ju.Properties
+  ): scala.Array[DriverPropertyInfo] = ???
 
   override def connect(url: String, info: ju.Properties): Connection = {
     if (!acceptsURL(url)) {
@@ -29,5 +32,6 @@ class SQLiteDriver extends Driver {
 
   override def getMinorVersion(): Int = 0
 
-  override def jdbcCompliant(): Boolean = false // SQLite doesn't support all JDBC features
+  override def jdbcCompliant(): Boolean =
+    false // SQLite doesn't support all JDBC features
 }

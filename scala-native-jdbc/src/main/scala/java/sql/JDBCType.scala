@@ -2,7 +2,7 @@ package java.sql
 
 enum JDBCType(private val vendorTypeNumber: Int) extends Enum[JDBCType] {
   case ARRAY extends JDBCType(Types.ARRAY)
-  case BIGINT extends JDBCType(Types.BIGINT) 
+  case BIGINT extends JDBCType(Types.BIGINT)
   case BINARY extends JDBCType(Types.BINARY)
   case BIT extends JDBCType(Types.BIT)
   case BLOB extends JDBCType(Types.BLOB)

@@ -62,13 +62,13 @@ lazy val `scala-native-jdbc-sqlite` = project
   .enablePlugins(ScalaNativePlugin)
   .dependsOn(`scala-native-jdbc`)
 
-
 lazy val `scala-native-jdbc-duckdb` = project
   .in(file("scala-native-jdbc-duckdb"))
   .settings(
     name := "scala-native-jdbc-duckdb",
     Compile / resourceGenerators += Def.task {
-      val url = "https://raw.githubusercontent.com/duckdb/duckdb/refs/tags/v1.2.1/src/include/duckdb.h"
+      val url =
+        "https://raw.githubusercontent.com/duckdb/duckdb/refs/tags/v1.2.1/src/include/duckdb.h"
       val targetDir =
         (Compile / resourceManaged).value / "scala-native" / "duckdb"
       val tempDir = IO.createTemporaryDirectory
@@ -83,44 +83,47 @@ lazy val `scala-native-jdbc-duckdb` = project
       }
       Seq(targetDir / "duckdb.h")
     }.taskValue,
-    Test / test :=  {}
+    Test / test := {}
   )
   .enablePlugins(ScalaNativePlugin)
   .dependsOn(`scala-native-jdbc`)
 
-lazy val `scala-native-jdbc-sqlite-tests` = crossProject(JVMPlatform, NativePlatform)
-  .crossType(CrossType.Pure)
-  .in(file("scala-native-jdbc-sqlite-tests"))
-  .settings(
-    name := "scala-native-jdbc-sqlite-tests",
-    noPublishSettings,
-    libraryDependencies ++= Seq(
-      "org.scalameta" %%% "munit" % "1.0.0" % Test
+lazy val `scala-native-jdbc-sqlite-tests` =
+  crossProject(JVMPlatform, NativePlatform)
+    .crossType(CrossType.Pure)
+    .in(file("scala-native-jdbc-sqlite-tests"))
+    .settings(
+      name := "scala-native-jdbc-sqlite-tests",
+      noPublishSettings,
+      libraryDependencies ++= Seq(
+        "org.scalameta" %%% "munit" % "1.0.0" % Test
+      )
     )
-  )
-  .nativeSettings(
-    nativeConfig ~= {c =>
-      c.withServiceProviders(
-        Map(
-          "java.sql.Driver" -> Seq(
-            "com.github.lolgab.jdbc.sqlite.SQLiteDriver",
+    .nativeSettings(
+      nativeConfig ~= { c =>
+        c.withServiceProviders(
+          Map(
+            "java.sql.Driver" -> Seq(
+              "com.github.lolgab.jdbc.sqlite.SQLiteDriver"
+            )
           )
         )
-      )
-    }
-  )
-  .nativeConfigure(
-    _.dependsOn(`scala-native-jdbc-sqlite`)
-  )
-  .jvmSettings(
-    Test / fork := true,
-    libraryDependencies ++= Seq(
-      "org.xerial" % "sqlite-jdbc" % "3.50.1.0",
+      }
     )
-  )
+    .nativeConfigure(
+      _.dependsOn(`scala-native-jdbc-sqlite`)
+    )
+    .jvmSettings(
+      Test / fork := true,
+      libraryDependencies ++= Seq(
+        "org.xerial" % "sqlite-jdbc" % "3.50.1.0"
+      )
+    )
 
-
-lazy val `scala-native-jdbc-duckdb-tests` = crossProject(JVMPlatform, NativePlatform)
+lazy val `scala-native-jdbc-duckdb-tests` = crossProject(
+  JVMPlatform,
+  NativePlatform
+)
   .crossType(CrossType.Pure)
   .in(file("scala-native-jdbc-duckdb-tests"))
   .settings(
@@ -131,16 +134,16 @@ lazy val `scala-native-jdbc-duckdb-tests` = crossProject(JVMPlatform, NativePlat
     )
   )
   .nativeSettings(
-    nativeConfig ~= {c =>
+    nativeConfig ~= { c =>
       // Assumes libduckdb.dylib is in /usr/local/lib on Mac OS
       c.withLinkingOptions(c.linkingOptions ++ Seq("-rpath", "/usr/local/lib"))
-       .withServiceProviders(
-        Map(
-          "java.sql.Driver" -> Seq(
-            "com.github.lolgab.jdbc.duckdb.DuckDBDriver"
+        .withServiceProviders(
+          Map(
+            "java.sql.Driver" -> Seq(
+              "com.github.lolgab.jdbc.duckdb.DuckDBDriver"
+            )
           )
         )
-      )
     }
   )
   .nativeConfigure(

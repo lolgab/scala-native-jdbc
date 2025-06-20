@@ -11,7 +11,8 @@ import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 import scala.scalanative.libc.stdlib.*
 
-class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) extends SimpleResultSet {
+class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result])
+    extends SimpleResultSet {
 
   override def deleteRow(): Unit = ???
 
@@ -33,19 +34,37 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def updateBytes(columnIndex: Int, x: scala.Array[Byte]): Unit = ???
 
-  override def updateBytes(columnLabel: String, x: scala.Array[Byte]): Unit = ???
+  override def updateBytes(columnLabel: String, x: scala.Array[Byte]): Unit =
+    ???
 
-  override def updateAsciiStream(columnIndex: Int, x: InputStream, length: Int): Unit = ???
+  override def updateAsciiStream(
+      columnIndex: Int,
+      x: InputStream,
+      length: Int
+  ): Unit = ???
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream, length: Int): Unit = ???
+  override def updateAsciiStream(
+      columnLabel: String,
+      x: InputStream,
+      length: Int
+  ): Unit = ???
 
-  override def updateAsciiStream(columnIndex: Int, x: InputStream, length: Long): Unit = ???
+  override def updateAsciiStream(
+      columnIndex: Int,
+      x: InputStream,
+      length: Long
+  ): Unit = ???
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream, length: Long): Unit = ???
+  override def updateAsciiStream(
+      columnLabel: String,
+      x: InputStream,
+      length: Long
+  ): Unit = ???
 
   override def updateAsciiStream(columnIndex: Int, x: InputStream): Unit = ???
 
-  override def updateAsciiStream(columnLabel: String, x: InputStream): Unit = ???
+  override def updateAsciiStream(columnLabel: String, x: InputStream): Unit =
+    ???
 
   override def rowDeleted(): Boolean = ???
 
@@ -77,21 +96,42 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def updateBlob(columnLabel: String, x: Blob): Unit = ???
 
-  override def updateBlob(columnIndex: Int, inputStream: InputStream, length: Long): Unit = ???
+  override def updateBlob(
+      columnIndex: Int,
+      inputStream: InputStream,
+      length: Long
+  ): Unit = ???
 
-  override def updateBlob(columnLabel: String, inputStream: InputStream, length: Long): Unit = ???
+  override def updateBlob(
+      columnLabel: String,
+      inputStream: InputStream,
+      length: Long
+  ): Unit = ???
 
-  override def updateBlob(columnIndex: Int, inputStream: InputStream): Unit = ???
+  override def updateBlob(columnIndex: Int, inputStream: InputStream): Unit =
+    ???
 
-  override def updateBlob(columnLabel: String, inputStream: InputStream): Unit = ???
+  override def updateBlob(columnLabel: String, inputStream: InputStream): Unit =
+    ???
 
-  override def updateNCharacterStream(columnIndex: Int, x: Reader, length: Long): Unit = ???
+  override def updateNCharacterStream(
+      columnIndex: Int,
+      x: Reader,
+      length: Long
+  ): Unit = ???
 
-  override def updateNCharacterStream(columnLabel: String, reader: Reader, length: Long): Unit = ???
+  override def updateNCharacterStream(
+      columnLabel: String,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
   override def updateNCharacterStream(columnIndex: Int, x: Reader): Unit = ???
 
-  override def updateNCharacterStream(columnLabel: String, reader: Reader): Unit = ???
+  override def updateNCharacterStream(
+      columnLabel: String,
+      reader: Reader
+  ): Unit = ???
 
   override def getNCharacterStream(columnIndex: Int): Reader = ???
 
@@ -103,17 +143,29 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def updateNString(columnLabel: String, nString: String): Unit = ???
 
-  override def updateBigDecimal(columnIndex: Int, x: java.math.BigDecimal): Unit = ???
+  override def updateBigDecimal(
+      columnIndex: Int,
+      x: java.math.BigDecimal
+  ): Unit = ???
 
-  override def updateBigDecimal(columnLabel: String, x: java.math.BigDecimal): Unit = ???
+  override def updateBigDecimal(
+      columnLabel: String,
+      x: java.math.BigDecimal
+  ): Unit = ???
 
   override def getObject(columnIndex: Int): Object = ???
 
   override def getObject(columnLabel: String): Object = ???
 
-  override def getObject(columnIndex: Int, map: ju.Map[String, Class[?]]): Object = ???
+  override def getObject(
+      columnIndex: Int,
+      map: ju.Map[String, Class[?]]
+  ): Object = ???
 
-  override def getObject(columnLabel: String, map: ju.Map[String, Class[?]]): Object = ???
+  override def getObject(
+      columnLabel: String,
+      map: ju.Map[String, Class[?]]
+  ): Object = ???
 
   override def getObject[T](columnIndex: Int, `type`: Class[T]): T = ???
 
@@ -153,9 +205,17 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def updateClob(columnLabel: String, x: Clob): Unit = ???
 
-  override def updateClob(columnIndex: Int, reader: Reader, length: Long): Unit = ???
+  override def updateClob(
+      columnIndex: Int,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
-  override def updateClob(columnLabel: String, reader: Reader, length: Long): Unit = ???
+  override def updateClob(
+      columnLabel: String,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
   override def updateClob(columnIndex: Int, reader: Reader): Unit = ???
 
@@ -163,17 +223,34 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def beforeFirst(): Unit = ???
 
-  override def updateBinaryStream(columnIndex: Int, x: InputStream, length: Int): Unit = ???
+  override def updateBinaryStream(
+      columnIndex: Int,
+      x: InputStream,
+      length: Int
+  ): Unit = ???
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream, length: Int): Unit = ???
+  override def updateBinaryStream(
+      columnLabel: String,
+      x: InputStream,
+      length: Int
+  ): Unit = ???
 
-  override def updateBinaryStream(columnIndex: Int, x: InputStream, length: Long): Unit = ???
+  override def updateBinaryStream(
+      columnIndex: Int,
+      x: InputStream,
+      length: Long
+  ): Unit = ???
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream, length: Long): Unit = ???
+  override def updateBinaryStream(
+      columnLabel: String,
+      x: InputStream,
+      length: Long
+  ): Unit = ???
 
   override def updateBinaryStream(columnIndex: Int, x: InputStream): Unit = ???
 
-  override def updateBinaryStream(columnLabel: String, x: InputStream): Unit = ???
+  override def updateBinaryStream(columnLabel: String, x: InputStream): Unit =
+    ???
 
   override def updateTimestamp(columnIndex: Int, x: Timestamp): Unit = ???
 
@@ -221,11 +298,19 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def getCursorName(): String = ???
 
-  override def updateObject(columnIndex: Int, x: Object, scaleOrLength: Int): Unit = ???
+  override def updateObject(
+      columnIndex: Int,
+      x: Object,
+      scaleOrLength: Int
+  ): Unit = ???
 
   override def updateObject(columnIndex: Int, x: Object): Unit = ???
 
-  override def updateObject(columnLabel: String, x: Object, scaleOrLength: Int): Unit = ???
+  override def updateObject(
+      columnLabel: String,
+      x: Object,
+      scaleOrLength: Int
+  ): Unit = ???
 
   override def updateObject(columnLabel: String, x: Object): Unit = ???
 
@@ -237,17 +322,36 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def updateBoolean(columnLabel: String, x: Boolean): Unit = ???
 
-  override def updateCharacterStream(columnIndex: Int, x: Reader, length: Int): Unit = ???
+  override def updateCharacterStream(
+      columnIndex: Int,
+      x: Reader,
+      length: Int
+  ): Unit = ???
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader, length: Int): Unit = ???
+  override def updateCharacterStream(
+      columnLabel: String,
+      reader: Reader,
+      length: Int
+  ): Unit = ???
 
-  override def updateCharacterStream(columnIndex: Int, x: Reader, length: Long): Unit = ???
+  override def updateCharacterStream(
+      columnIndex: Int,
+      x: Reader,
+      length: Long
+  ): Unit = ???
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader, length: Long): Unit = ???
+  override def updateCharacterStream(
+      columnLabel: String,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
   override def updateCharacterStream(columnIndex: Int, x: Reader): Unit = ???
 
-  override def updateCharacterStream(columnLabel: String, reader: Reader): Unit = ???
+  override def updateCharacterStream(
+      columnLabel: String,
+      reader: Reader
+  ): Unit = ???
 
   override def getType(): Int = ???
 
@@ -263,9 +367,17 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def updateNClob(columnLabel: String, nClob: NClob): Unit = ???
 
-  override def updateNClob(columnIndex: Int, reader: Reader, length: Long): Unit = ???
+  override def updateNClob(
+      columnIndex: Int,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
-  override def updateNClob(columnLabel: String, reader: Reader, length: Long): Unit = ???
+  override def updateNClob(
+      columnLabel: String,
+      reader: Reader,
+      length: Long
+  ): Unit = ???
 
   override def updateNClob(columnIndex: Int, reader: Reader): Unit = ???
 
@@ -289,7 +401,8 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def getTimestamp(columnIndex: Int, cal: ju.Calendar): Timestamp = ???
 
-  override def getTimestamp(columnLabel: String, cal: ju.Calendar): Timestamp = ???
+  override def getTimestamp(columnLabel: String, cal: ju.Calendar): Timestamp =
+    ???
 
   override def getNClob(columnIndex: Int): NClob = ???
 
@@ -327,9 +440,15 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
 
   override def updateRef(columnLabel: String, x: Ref): Unit = ???
 
-  override def getBigDecimal(columnIndex: Int, scale: Int): java.math.BigDecimal = ???
+  override def getBigDecimal(
+      columnIndex: Int,
+      scale: Int
+  ): java.math.BigDecimal = ???
 
-  override def getBigDecimal(columnLabel: String, scale: Int): java.math.BigDecimal = ???
+  override def getBigDecimal(
+      columnLabel: String,
+      scale: Int
+  ): java.math.BigDecimal = ???
 
   override def getBigDecimal(columnIndex: Int): java.math.BigDecimal = ???
 
@@ -358,13 +477,15 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
     checkClosed()
     if (isAfterLast) {
       false
-    }
-    else if (_currentChunk != null && _chunkIdx < duckdb_data_chunk_get_size(!_currentChunk) - 1.toULong) {
+    } else if (
+      _currentChunk != null && _chunkIdx < duckdb_data_chunk_get_size(
+        !_currentChunk
+      ) - 1.toULong
+    ) {
       _row = _row + 1
       _chunkIdx = _chunkIdx + 1.toULong
       true
-    }
-    else {
+    } else {
       if (_currentChunk != null) duckdb_destroy_data_chunk(_currentChunk)
       duckdb_fetch_chunk(result) match {
         case chunk if chunk.value == null =>
@@ -377,7 +498,8 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
           val rowCount = duckdb_data_chunk_get_size(chunk)
           _isBeforeFirst = false
           _row += 1
-          _currentChunk = malloc(sizeOf[duckdb_data_chunk]).asInstanceOf[Ptr[duckdb_data_chunk]]
+          _currentChunk = malloc(sizeOf[duckdb_data_chunk])
+            .asInstanceOf[Ptr[duckdb_data_chunk]]
           !_currentChunk = chunk
           _chunkIdx = 0.toULong
           true
@@ -420,7 +542,8 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
   override def getString(columnIndex: Int): String = {
     checkClosed()
     checkColumnIndex(columnIndex)
-    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val column =
+      duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
     val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[duckdb_string_t]]
     val validity = duckdb_vector_get_validity(column)
     if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
@@ -428,13 +551,11 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
       if (stringData == null) {
         _lastWasNull = true
         null
-      }
-      else {
+      } else {
         _lastWasNull = false
         fromCString(stringData)
       }
-    }
-    else {
+    } else {
       _lastWasNull = true
       null
     }
@@ -455,13 +576,13 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
   private def getIntegerNumber(columnIndex: Int): Long = {
     checkClosed()
     checkColumnIndex(columnIndex)
-    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val column =
+      duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
     val validity = duckdb_vector_get_validity(column)
     if (!duckdb_validity_row_is_valid(validity, _chunkIdx)) {
       _lastWasNull = true
       0L
-    }
-    else {
+    } else {
       _lastWasNull = false
       val data = duckdb_vector_get_data(column)
       duckdb_column_type(result, (columnIndex - 1).toULong) match {
@@ -497,13 +618,13 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
   private def getFloatingNumber(columnIndex: Int): Double = {
     checkClosed()
     checkColumnIndex(columnIndex)
-    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val column =
+      duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
     val validity = duckdb_vector_get_validity(column)
     if (!duckdb_validity_row_is_valid(validity, _chunkIdx)) {
       _lastWasNull = true
       0L
-    }
-    else {
+    } else {
       _lastWasNull = false
       val data = duckdb_vector_get_data(column)
       duckdb_column_type(result, (columnIndex - 1).toULong) match {
@@ -535,14 +656,14 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
   override def getBoolean(columnIndex: Int): Boolean = {
     checkClosed()
     checkColumnIndex(columnIndex)
-    val column = duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
+    val column =
+      duckdb_data_chunk_get_vector(!_currentChunk, (columnIndex - 1).toULong)
     val data = duckdb_vector_get_data(column).asInstanceOf[Ptr[Boolean]]
     val validity = duckdb_vector_get_validity(column)
     if (duckdb_validity_row_is_valid(validity, _chunkIdx)) {
       _lastWasNull = false
       data(_chunkIdx.toUSize)
-    }
-    else {
+    } else {
       _lastWasNull = true
       false
     }
@@ -586,4 +707,4 @@ class DuckDBResultSet(statement: DuckDBStatement, result: Ptr[duckdb_result]) ex
     }
     throw SQLException(s"Column not found: $columnLabel")
   }
-} 
+}

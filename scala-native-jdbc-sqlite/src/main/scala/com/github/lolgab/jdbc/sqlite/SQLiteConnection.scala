@@ -256,7 +256,10 @@ class SQLiteConnection(filename: String) extends Connection {
       SQLiteOps.withStatement(db, sql) { stmt =>
         val result = sqlite3_step(stmt)
         if (result != SQLITE_DONE) {
-          throw SQLiteOps.sqliteException(db, s"Failed to execute statement: $sql")
+          throw SQLiteOps.sqliteException(
+            db,
+            s"Failed to execute statement: $sql"
+          )
         }
       }
     }

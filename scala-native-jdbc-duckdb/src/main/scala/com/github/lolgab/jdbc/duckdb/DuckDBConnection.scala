@@ -139,7 +139,8 @@ class DuckDBConnection(filename: String) extends Connection {
 
   locally {
     Zone {
-      val dbPtr = malloc(sizeof[duckdb_database]).asInstanceOf[Ptr[duckdb_database]]
+      val dbPtr =
+        malloc(sizeof[duckdb_database]).asInstanceOf[Ptr[duckdb_database]]
       val dbResult =
         if (filename.isEmpty) duckdb_open(null, dbPtr)
         else duckdb_open(toCString(filename), dbPtr)
@@ -148,7 +149,8 @@ class DuckDBConnection(filename: String) extends Connection {
         throw SQLException(s"Failed to open database: $filename")
       }
       db = dbPtr
-      val connPtr = malloc(sizeof[duckdb_connection]).asInstanceOf[Ptr[duckdb_connection]]
+      val connPtr =
+        malloc(sizeof[duckdb_connection]).asInstanceOf[Ptr[duckdb_connection]]
       val connResult = duckdb_connect(!db, connPtr)
       if (connResult == duckdb_state.DuckDBError) {
         free(connPtr)
