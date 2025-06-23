@@ -155,6 +155,37 @@ lazy val `scala-native-jdbc-duckdb-tests` = crossProject(
     )
   )
 
+lazy val `scalasql-tests` = project
+  .in(file("scalasql-tests"))
+  .settings(
+    name := "scalasql-tests",
+    scalaVersion := "3.6.2",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "geny" % "1.1.1",
+      "com.lihaoyi" %%% "pprint" % "0.9.0",
+      "com.lihaoyi" %%% "upickle" % "3.3.1" % Test,
+      "com.lihaoyi" %%% "os-lib" % "0.10.7" % Test,
+      "com.lihaoyi" %%% "utest" % "0.8.5" % Test,
+      "io.github.cquiroz" %%% "scala-java-time" % "2.6.0" % Test
+    ),
+    testFrameworks += new TestFramework("utest.runner.Framework"),
+    publish / skip := true
+  )
+  .settings(
+    nativeConfig ~= {
+      _.withServiceProviders(
+        Map(
+          "java.sql.Driver" -> Seq("com.github.lolgab.jdbc.sqlite.SQLiteDriver")
+        )
+      )
+        .withSourceLevelDebuggingConfig(_.enableAll)
+        .withOptimize(false)
+    },
+    Test / mainClass := Some("scalasql.example.SqliteExample")
+  )
+  .enablePlugins(ScalaNativePlugin)
+  .dependsOn(`scala-native-jdbc-sqlite`)
+
 lazy val root = project
   .in(file("."))
   .settings(
