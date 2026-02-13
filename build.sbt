@@ -32,7 +32,7 @@ lazy val `scala-native-jdbc-sqlite` = project
   .settings(
     name := "scala-native-jdbc-sqlite",
     Compile / resourceGenerators += Def.task {
-      val url = "https://sqlite.org/2025/sqlite-amalgamation-3490100.zip"
+      val url = "https://sqlite.org/2026/sqlite-amalgamation-3510200.zip"
       val targetDir =
         (Compile / resourceManaged).value / "scala-native" / "sqlite"
       val tempDir = IO.createTemporaryDirectory
@@ -48,7 +48,7 @@ lazy val `scala-native-jdbc-sqlite` = project
         // Create target directory and copy only sqlite3.c
         targetDir.mkdirs()
         val sqlite3File =
-          tempDir / "sqlite-amalgamation-3490100" / "sqlite3.c"
+          tempDir / "sqlite-amalgamation-3510200" / "sqlite3.c"
         IO.copyFile(sqlite3File, targetDir / "sqlite3.c")
         Seq(targetDir / "sqlite3.c")
       } finally {
@@ -115,7 +115,7 @@ lazy val `scala-native-jdbc-sqlite-tests` =
     .jvmSettings(
       Test / fork := true,
       libraryDependencies ++= Seq(
-        "org.xerial" % "sqlite-jdbc" % "3.50.1.0"
+        "org.xerial" % "sqlite-jdbc" % "3.51.2.0"
       )
     )
 
