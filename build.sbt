@@ -31,31 +31,7 @@ lazy val `scala-native-jdbc-sqlite` = project
   .in(file("scala-native-jdbc-sqlite"))
   .settings(
     name := "scala-native-jdbc-sqlite",
-    Compile / resourceGenerators += Def.task {
-      val url = "https://sqlite.org/2026/sqlite-amalgamation-3510300.zip"
-      val targetDir =
-        (Compile / resourceManaged).value / "scala-native" / "sqlite"
-      val tempDir = IO.createTemporaryDirectory
-
-      try {
-        // Download and extract to temp directory
-        val tempZip = tempDir / "sqlite.zip"
-        sbt.io.Using.urlInputStream(new URL(url)) { inputStream =>
-          IO.transfer(inputStream, tempZip)
-        }
-        IO.unzip(tempZip, tempDir)
-
-        // Create target directory and copy only sqlite3.c
-        targetDir.mkdirs()
-        val sqlite3File =
-          tempDir / "sqlite-amalgamation-3510300" / "sqlite3.c"
-        IO.copyFile(sqlite3File, targetDir / "sqlite3.c")
-        Seq(targetDir / "sqlite3.c")
-      } finally {
-        // Cleanup
-        IO.delete(tempDir)
-      }
-    }.taskValue,
+    libraryDependencies += "com.github.lolgab" % "scala-native-sqlite-amalgamation" % "3.53.2",
     Test / test := {}
   )
   .enablePlugins(ScalaNativePlugin)
