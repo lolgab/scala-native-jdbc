@@ -137,7 +137,7 @@ class SimpleTest extends munit.FunSuite {
 
     // Test complex query with joins and aggregations
     val resultSet = statement.executeQuery("""
-      SELECT 
+      SELECT
         c.name,
         COUNT(DISTINCT o.id) as order_count,
         SUM(o.total) as total_spent,
