@@ -34,7 +34,7 @@ lazy val `scala-native-jdbc-sqlite` = project
   .in(file("scala-native-jdbc-sqlite"))
   .settings(
     name := "scala-native-jdbc-sqlite",
-    libraryDependencies += "com.github.lolgab" % "scala-native-sqlite-amalgamation" % "3.53.2",
+    libraryDependencies += "com.github.lolgab" % "scala-native-sqlite-amalgamation" % "3.54.0",
     Test / test := TestResult.Empty
   )
   .enablePlugins(ScalaNativePlugin)
