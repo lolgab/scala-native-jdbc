@@ -219,7 +219,7 @@ class SQLitePreparedStatement(
     checkClosed()
     val result = sqlite3_clear_bindings(stmt)
     if (result != SQLITE_OK) {
-      SQLiteOps.sqliteException(db, "Failed to clear parameters")
+      throw SQLiteOps.sqliteException(db, "Failed to clear parameters")
     }
   }
 
