@@ -131,7 +131,7 @@ class SQLiteStatement(
       SQLiteOps.withStatement(db, sql) { stmt =>
         val result = sqlite3_step(stmt)
         if (result != SQLITE_DONE) {
-          SQLiteOps.sqliteException(db, s"Failed to execute update: $sql")
+          throw SQLiteOps.sqliteException(db, s"Failed to execute update: $sql")
         }
 
         sqlite3_changes(db)

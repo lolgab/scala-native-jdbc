@@ -18,7 +18,7 @@ object SQLiteOps {
     val result =
       sqlite3_prepare_v3(db, toCString(sql), -1, 0.toUInt, stmtPtr, null)
     if (result != SQLITE_OK) {
-      sqliteException(db, s"Failed to prepare statement: $sql")
+      throw sqliteException(db, s"Failed to prepare statement: $sql")
     }
     !stmtPtr
   }
@@ -139,7 +139,7 @@ object SQLiteOps {
 
   private def checkResult(db: Ptr[sqlite3], result: Int): Unit = {
     if (result != SQLITE_OK) {
-      sqliteException(db, s"SQLite operation failed with code: $result")
+      throw sqliteException(db, s"SQLite operation failed with code: $result")
     }
   }
 
